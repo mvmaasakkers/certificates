@@ -10,7 +10,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "Certificates"
-	app.Usage = ""
+	app.Usage = "An opinionated TLS certificate generator."
 	app.Version = "v0.0.1-alpha1"
 	app.Description = "An opinionated TLS certificate generator."
 	app.Commands = []cli.Command{

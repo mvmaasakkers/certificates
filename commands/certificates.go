@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"github.com/mvmaasakkers/certificates/service/cert"
 	"gopkg.in/urfave/cli.v1"
 	"io/ioutil"
@@ -98,7 +99,7 @@ var CertificateCommand = cli.Command{
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "stdout",
-					Usage: "Send pem to stdout instead of to filename",
+					Usage: "Send pem to stdout instead of to file",
 				},
 				cli.StringFlag{
 					Name:  "ca",
@@ -174,15 +175,21 @@ var CertificateCommand = cli.Command{
 
 				caCrt, err := ioutil.ReadFile(c.String("ca"))
 				if err != nil {
-					return nil
+					return err
 				}
 				caKey, err := ioutil.ReadFile(c.String("ca-key"))
 				if err != nil {
-					return nil
+					return err
 				}
 
 				crt, key, err := cr.GenerateCertificate(caCrt, caKey)
 				if err != nil {
+					return err
+				}
+
+				if c.Bool("stdout") {
+					fmt.Println(string(key))
+					fmt.Println(string(crt))
 					return nil
 				}
 
