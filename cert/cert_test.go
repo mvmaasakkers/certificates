@@ -164,7 +164,7 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 				NotBefore:     tt.fields.NotBefore,
 				NotAfter:      tt.fields.NotAfter,
 			}
-			got, got1, err := req.GenerateCertificate(tt.args.caCrt, tt.args.caKey)
+			got, got1, err := req.GenerateCertificate(nil, tt.args.caCrt, tt.args.caKey)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CertRequest.GenerateCertificate() error = %v, wantErr %v", err, tt.wantErr)
 				return
