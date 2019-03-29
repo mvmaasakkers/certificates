@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/mvmaasakkers/certificates"
+	"github.com/mvmaasakkers/certificates/cert"
 	"gopkg.in/urfave/cli.v1"
 	"io/ioutil"
 )
@@ -18,55 +18,54 @@ var CertificateCommand = cli.Command{
 			Usage:   "generate ca",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name: "ca",
+					Name:  "ca",
 					Value: "ca.crt",
 					Usage: "Filename to write the ca cert to",
 				},
 				cli.StringFlag{
-					Name: "ca-key",
+					Name:  "ca-key",
 					Value: "ca.key",
 					Usage: "Filename to write the ca key to",
 				},
 				cli.StringFlag{
-					Name: "cn",
+					Name:  "cn",
 					Value: "",
 					Usage: "Common name attached to the ca cert",
 				},
 				cli.StringFlag{
-					Name: "org",
+					Name:  "org",
 					Value: "",
 					Usage: "Organisation",
 				},
 				cli.StringFlag{
-					Name: "country",
+					Name:  "country",
 					Value: "",
 					Usage: "Country",
 				},
 				cli.StringFlag{
-					Name: "province",
+					Name:  "province",
 					Value: "",
 					Usage: "Province",
 				},
 				cli.StringFlag{
-					Name: "locality",
+					Name:  "locality",
 					Value: "",
 					Usage: "Locality",
 				},
 				cli.StringFlag{
-					Name: "postalcode",
+					Name:  "postalcode",
 					Value: "",
 					Usage: "PostalCode",
 				},
 				cli.StringFlag{
-					Name: "streetaddress",
+					Name:  "streetaddress",
 					Value: "",
 					Usage: "StreetAddress",
 				},
-
 			},
 			Action: func(c *cli.Context) error {
 
-				ca := main.NewCARequest()
+				ca := cert.NewCARequest()
 				ca.CommonName = c.String("cn")
 				ca.Organization = c.String("org")
 				ca.Country = c.String("country")
@@ -75,12 +74,11 @@ var CertificateCommand = cli.Command{
 				ca.PostalCode = c.String("postalcode")
 				ca.StreetAddress = c.String("streetaddress")
 
-
 				caCrt, caKey, err := ca.GenerateCA()
 				if err != nil {
 					return err
 				}
-				
+
 				if err := ioutil.WriteFile(c.String("ca"), caCrt, 0600); err != nil {
 					return err
 				}
@@ -122,48 +120,48 @@ var CertificateCommand = cli.Command{
 					Usage: "Filename to write key to",
 				},
 				cli.StringFlag{
-					Name: "cn",
+					Name:  "cn",
 					Value: "",
 					Usage: "Common name attached to the cert",
 				},
 				cli.StringFlag{
-					Name: "org",
+					Name:  "org",
 					Value: "",
 					Usage: "Organisation",
 				},
 				cli.StringFlag{
-					Name: "country",
+					Name:  "country",
 					Value: "",
 					Usage: "Country",
 				},
 				cli.StringFlag{
-					Name: "province",
+					Name:  "province",
 					Value: "",
 					Usage: "Province",
 				},
 				cli.StringFlag{
-					Name: "locality",
+					Name:  "locality",
 					Value: "",
 					Usage: "Locality",
 				},
 				cli.StringFlag{
-					Name: "postalcode",
+					Name:  "postalcode",
 					Value: "",
 					Usage: "PostalCode",
 				},
 				cli.StringFlag{
-					Name: "streetaddress",
+					Name:  "streetaddress",
 					Value: "",
 					Usage: "StreetAddress",
 				},
 				cli.StringFlag{
-					Name: "serialnumber",
+					Name:  "serialnumber",
 					Value: "",
 					Usage: "SerialNumber",
 				},
 			},
 			Action: func(c *cli.Context) error {
-				cr := main.NewCertRequest()
+				cr := cert.NewCertRequest()
 				cr.CommonName = c.String("cn")
 				cr.Organization = c.String("org")
 				cr.Country = c.String("country")
