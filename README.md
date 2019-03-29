@@ -43,23 +43,26 @@ USAGE:
    Certificates certificate generate [command options] [arguments...]
 
 OPTIONS:
-   --stdout                  Send pem to stdout instead of to file
-   --ca value                CA Certificate file (default: "ca.crt")
-   --ca-key value            CA Key file (default: "ca.key")
-   --crt value               Filename to write certificate to (default: "certificate.crt")
-   --key value               Filename to write key to (default: "certificate.key")
-   --cn value                Common name attached to the cert
-   --org value               Organisation
-   --country value           Country
-   --province value          Province
-   --locality value          Locality
-   --postalcode value        PostalCode
-   --streetaddress value     StreetAddress
-   --serialnumber value      SerialNumber
-   --subject-alt-name value  Subject Alt Name
-
+   --stdout                   Send pem to stdout instead of to file
+   --ca value                 CA Certificate file (default: "ca.crt")
+   --ca-key value             CA Key file (default: "ca.key")
+   --ca-db-type value         CA DB type (sql) (default: "sql")
+   --ca-db-sql-dialect value  SQL Dialect (default: "sqlite3")
+   --ca-db-sql-cs value       SQL Connection String (default: "sql.db")
+   --crt value                Filename to write certificate to (default: "certificate.crt")
+   --key value                Filename to write key to (default: "certificate.key")
+   --cn value                 Common name attached to the cert
+   --org value                Organisation
+   --country value            Country
+   --province value           Province
+   --locality value           Locality
+   --postalcode value         PostalCode
+   --streetaddress value      StreetAddress
+   --serialnumber value       SerialNumber
+   --subject-alt-name value   Subject Alt Name
 ```
 
+The CA database can be one of the following flavours of sql: sqlite3, mysql, postgresql or mssql. 
 
 ## Development setup
 
@@ -78,7 +81,7 @@ USAGE:
    main [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.0.1-alpha1
+   v0.0.1-alpha2
 
 DESCRIPTION:
    An opinionated TLS certificate generator.

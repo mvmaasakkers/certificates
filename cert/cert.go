@@ -8,6 +8,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"github.com/mvmaasakkers/certificates/database"
 	"math/big"
 	"time"
 )
@@ -90,7 +91,7 @@ func (req *CertRequest) GetPKIXName() pkix.Name {
 	return name
 }
 
-func (req *CertRequest) GenerateCertificate(caCrt []byte, caKey []byte) ([]byte, []byte, error) {
+func (req *CertRequest) GenerateCertificate(db database.DB, caCrt []byte, caKey []byte) ([]byte, []byte, error) {
 	if err := req.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -133,6 +134,19 @@ func (req *CertRequest) GenerateCertificate(caCrt []byte, caKey []byte) ([]byte,
 
 	pemKeyOut := bytes.NewBuffer([]byte{})
 	if err := pem.Encode(pemKeyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(priv)}); err != nil {
+		return nil, nil, err
+	}
+
+	// Store in CA DB
+	dbCert := database.NewCertificate()
+	dbCert.Status = "valid"
+	dbCert.ExpirationDate = req.NotAfter
+	dbCert.RevocationDate = nil
+	dbCert.SerialNumber = req.SerialNumber
+	dbCert.CommonName = req.CommonName
+
+	certificateRepository := db.GetCertificateRepository()
+	if err := certificateRepository.Create(dbCert); err != nil {
 		return nil, nil, err
 	}
 

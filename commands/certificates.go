@@ -2,7 +2,10 @@ package commands
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/mvmaasakkers/certificates/cert"
+	"github.com/mvmaasakkers/certificates/database"
+	"github.com/mvmaasakkers/certificates/database/sql"
 	"gopkg.in/urfave/cli.v1"
 	"io/ioutil"
 )
@@ -110,6 +113,21 @@ var CertificateCommand = cli.Command{
 					Usage: "CA Key file",
 				},
 				cli.StringFlag{
+					Name:  "ca-db-type",
+					Value: "sql",
+					Usage: "CA DB type (sql)",
+				},
+				cli.StringFlag{
+					Name:  "ca-db-sql-dialect",
+					Value: "sqlite3",
+					Usage: "SQL Dialect",
+				},
+				cli.StringFlag{
+					Name:  "ca-db-sql-cs",
+					Value: "sql.db",
+					Usage: "SQL Connection String",
+				},
+				cli.StringFlag{
 					Name:  "crt",
 					Value: "certificate.crt",
 					Usage: "Filename to write certificate to",
@@ -176,6 +194,15 @@ var CertificateCommand = cli.Command{
 				cr.SerialNumber = c.String("serialnumber")
 				cr.SubjectAltNames = c.StringSlice("subject-alt-name")
 
+				if cr.SerialNumber == "" {
+					// Generating serial number
+					sn, err := uuid.NewRandom()
+					if err != nil {
+						return err
+					}
+					cr.SerialNumber = sn.String()
+				}
+
 				caCrt, err := ioutil.ReadFile(c.String("ca"))
 				if err != nil {
 					return err
@@ -185,7 +212,27 @@ var CertificateCommand = cli.Command{
 					return err
 				}
 
-				crt, key, err := cr.GenerateCertificate(caCrt, caKey)
+				// DB
+				var db database.DB
+				switch c.String("ca-db-type") {
+				case "sql":
+					db = sql.NewDB(c.String("ca-db-sql-dialect"), c.String("ca-db-sql-cs"))
+				}
+
+				if db == nil {
+					return database.ErrorNilConnection
+				}
+
+				if err := db.Open(); err != nil {
+					return err
+				}
+				defer db.Close()
+
+				if err := db.Provision(); err != nil {
+					return err
+				}
+
+				crt, key, err := cr.GenerateCertificate(db, caCrt, caKey)
 				if err != nil {
 					return err
 				}
@@ -196,10 +243,12 @@ var CertificateCommand = cli.Command{
 					return nil
 				}
 
+				fmt.Printf("Generated certificate with serial number %s\n", cr.SerialNumber)
+				fmt.Printf("Writing certificate to %s\n", c.String("crt"))
 				if err := ioutil.WriteFile(c.String("crt"), crt, 0600); err != nil {
 					return err
 				}
-
+				fmt.Printf("Writing key to %s\n", c.String("key"))
 				if err := ioutil.WriteFile(c.String("key"), key, 0600); err != nil {
 					return err
 				}
