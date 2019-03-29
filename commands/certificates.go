@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/mvmaasakkers/certificates/service/cert"
+	"github.com/mvmaasakkers/certificates"
 	"gopkg.in/urfave/cli.v1"
 	"io/ioutil"
 )
@@ -66,7 +66,7 @@ var CertificateCommand = cli.Command{
 			},
 			Action: func(c *cli.Context) error {
 
-				ca := cert.NewCARequest()
+				ca := main.NewCARequest()
 				ca.CommonName = c.String("cn")
 				ca.Organization = c.String("org")
 				ca.Country = c.String("country")
@@ -163,7 +163,7 @@ var CertificateCommand = cli.Command{
 				},
 			},
 			Action: func(c *cli.Context) error {
-				cr := cert.NewCertRequest()
+				cr := main.NewCertRequest()
 				cr.CommonName = c.String("cn")
 				cr.Organization = c.String("org")
 				cr.Country = c.String("country")
