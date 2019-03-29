@@ -79,16 +79,17 @@ func TestCertRequest_Validate(t *testing.T) {
 
 func TestCertRequest_GenerateCertificate(t *testing.T) {
 	type fields struct {
-		Organization  string
-		Country       string
-		Province      string
-		Locality      string
-		StreetAddress string
-		PostalCode    string
-		CommonName    string
-		SerialNumber  string
-		NotBefore     time.Time
-		NotAfter      time.Time
+		Organization    string
+		Country         string
+		Province        string
+		Locality        string
+		StreetAddress   string
+		PostalCode      string
+		CommonName      string
+		SerialNumber    string
+		SubjectAltNames []string
+		NotBefore       time.Time
+		NotAfter        time.Time
 	}
 	type args struct {
 		caCrt []byte
@@ -113,8 +114,32 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 				PostalCode:    "",
 				CommonName:    "",
 				SerialNumber:  "",
+				SubjectAltNames: []string{},
 				NotBefore:     time.Time{},
 				NotAfter:      time.Time{},
+			},
+			args: args{
+				caCrt: nil,
+				caKey: nil,
+			},
+			want:    nil,
+			want1:   nil,
+			wantErr: true,
+		},
+		{
+			name: "invalid_subject_alt_name",
+			fields: fields{
+				Organization:  "",
+				Country:       "",
+				Province:      "",
+				Locality:      "",
+				StreetAddress: "",
+				PostalCode:    "",
+				CommonName:    "cn",
+				SerialNumber:  "",
+				SubjectAltNames: []string{""},
+				NotBefore: time.Time{},
+				NotAfter:  time.Time{},
 			},
 			args: args{
 				caCrt: nil,

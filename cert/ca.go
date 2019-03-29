@@ -39,22 +39,52 @@ func (req *CARequest) Validate() error {
 	return nil
 }
 
+func (req *CARequest) GetPKIXName() pkix.Name {
+	name := pkix.Name{}
+
+	if req.Organization != "" {
+		name.Organization = []string{req.Organization}
+	}
+
+	if req.Country != "" {
+		name.Country = []string{req.Country}
+	}
+
+	if req.Province != "" {
+		name.Province = []string{req.Province}
+	}
+
+	if req.Locality != "" {
+		name.Locality = []string{req.Locality}
+	}
+
+	if req.StreetAddress != "" {
+		name.StreetAddress = []string{req.StreetAddress}
+	}
+
+	if req.PostalCode != "" {
+		name.PostalCode = []string{req.PostalCode}
+	}
+
+	if req.Locality != "" {
+		name.Locality = []string{req.Locality}
+	}
+
+	if req.CommonName != "" {
+		name.CommonName = req.CommonName
+	}
+
+	return name
+}
+
 func (req *CARequest) GenerateCA() ([]byte, []byte, error) {
 	if err := req.Validate(); err != nil {
 		return nil, nil, err
 	}
 
 	ca := &x509.Certificate{
-		SerialNumber: big.NewInt(1653),
-		Subject: pkix.Name{
-			Organization:  []string{req.Organization},
-			Country:       []string{req.Country},
-			Province:      []string{req.Province},
-			Locality:      []string{req.Locality},
-			StreetAddress: []string{req.StreetAddress},
-			PostalCode:    []string{req.PostalCode},
-			CommonName:    req.CommonName,
-		},
+		SerialNumber:          big.NewInt(1653),
+		Subject:               req.GetPKIXName(),
 		NotBefore:             req.NotBefore,
 		NotAfter:              req.NotAfter,
 		IsCA:                  true,

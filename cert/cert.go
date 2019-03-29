@@ -13,14 +13,15 @@ import (
 )
 
 type CertRequest struct {
-	Organization  string
-	Country       string
-	Province      string
-	Locality      string
-	StreetAddress string
-	PostalCode    string
-	CommonName    string
-	SerialNumber  string
+	Organization    string
+	Country         string
+	Province        string
+	Locality        string
+	StreetAddress   string
+	PostalCode      string
+	CommonName      string
+	SerialNumber    string
+	SubjectAltNames []string
 
 	NotBefore time.Time
 	NotAfter  time.Time
@@ -38,7 +39,55 @@ func (req *CertRequest) Validate() error {
 		return ErrorInvalidCommonName
 	}
 
+	for _, n := range req.SubjectAltNames {
+		if n == "" {
+			return ErrorInvalidSubjectAltName
+		}
+	}
+
 	return nil
+}
+
+func (req *CertRequest) GetPKIXName() pkix.Name {
+	name := pkix.Name{}
+
+	if req.Organization != "" {
+		name.Organization = []string{req.Organization}
+	}
+
+	if req.Country != "" {
+		name.Country = []string{req.Country}
+	}
+
+	if req.Province != "" {
+		name.Province = []string{req.Province}
+	}
+
+	if req.Locality != "" {
+		name.Locality = []string{req.Locality}
+	}
+
+	if req.StreetAddress != "" {
+		name.StreetAddress = []string{req.StreetAddress}
+	}
+
+	if req.PostalCode != "" {
+		name.PostalCode = []string{req.PostalCode}
+	}
+
+	if req.Locality != "" {
+		name.Locality = []string{req.Locality}
+	}
+
+	if req.CommonName != "" {
+		name.CommonName = req.CommonName
+	}
+
+	if req.SerialNumber != "" {
+		name.SerialNumber = req.SerialNumber
+	}
+
+	return name
 }
 
 func (req *CertRequest) GenerateCertificate(caCrt []byte, caKey []byte) ([]byte, []byte, error) {
@@ -58,21 +107,17 @@ func (req *CertRequest) GenerateCertificate(caCrt []byte, caKey []byte) ([]byte,
 
 	cert := &x509.Certificate{
 		SerialNumber: big.NewInt(1658),
-		Subject: pkix.Name{
-			Organization:  []string{req.Organization},
-			Country:       []string{req.Country},
-			Province:      []string{req.Province},
-			Locality:      []string{req.Locality},
-			StreetAddress: []string{req.StreetAddress},
-			PostalCode:    []string{req.PostalCode},
-			CommonName:    req.CommonName,
-			SerialNumber:  req.SerialNumber,
-		},
-		NotBefore:   req.NotBefore,
-		NotAfter:    req.NotAfter,
-		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
-		KeyUsage:    x509.KeyUsageDigitalSignature,
+		Subject:      req.GetPKIXName(),
+		NotBefore:    req.NotBefore,
+		NotAfter:     req.NotAfter,
+		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:     x509.KeyUsageDigitalSignature,
 	}
+
+	if len(req.SubjectAltNames) > 0 {
+		cert.DNSNames = req.SubjectAltNames
+	}
+
 	priv, err := rsa.GenerateKey(rand.Reader, 4069)
 	if err != nil {
 		return nil, nil, err

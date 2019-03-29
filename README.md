@@ -10,7 +10,7 @@ chains for MA TLS.
 
 `certificate generate-ca`
 
-```bash
+```
 NAME:
    Certificates certificate generate-ca - generate ca
 
@@ -35,7 +35,7 @@ This needs a pregenerated CA certificate and key (see "Generate a CA set")
 
 `certificate generate`
 
-```bash
+```
 NAME:
    Certificates certificate generate - generate certificate
 
@@ -43,19 +43,21 @@ USAGE:
    Certificates certificate generate [command options] [arguments...]
 
 OPTIONS:
-   --stdout               Send pem to stdout instead of to file
-   --ca value             CA Certificate file (default: "ca.crt")
-   --ca-key value         CA Key file (default: "ca.key")
-   --crt value            Filename to write certificate to (default: "certificate.crt")
-   --key value            Filename to write key to (default: "certificate.key")
-   --cn value             Common name attached to the cert
-   --org value            Organisation
-   --country value        Country
-   --province value       Province
-   --locality value       Locality
-   --postalcode value     PostalCode
-   --streetaddress value  StreetAddress
-   --serialnumber value   SerialNumber
+   --stdout                  Send pem to stdout instead of to file
+   --ca value                CA Certificate file (default: "ca.crt")
+   --ca-key value            CA Key file (default: "ca.key")
+   --crt value               Filename to write certificate to (default: "certificate.crt")
+   --key value               Filename to write key to (default: "certificate.key")
+   --cn value                Common name attached to the cert
+   --org value               Organisation
+   --country value           Country
+   --province value          Province
+   --locality value          Locality
+   --postalcode value        PostalCode
+   --streetaddress value     StreetAddress
+   --serialnumber value      SerialNumber
+   --subject-alt-name value  Subject Alt Name
+
 ```
 
 

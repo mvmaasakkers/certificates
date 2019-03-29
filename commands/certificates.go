@@ -159,6 +159,10 @@ var CertificateCommand = cli.Command{
 					Value: "",
 					Usage: "SerialNumber",
 				},
+				cli.StringSliceFlag{
+					Name: "subject-alt-name",
+					Usage: "Subject Alt Name",
+				},
 			},
 			Action: func(c *cli.Context) error {
 				cr := cert.NewCertRequest()
@@ -170,6 +174,7 @@ var CertificateCommand = cli.Command{
 				cr.PostalCode = c.String("postalcode")
 				cr.StreetAddress = c.String("streetaddress")
 				cr.SerialNumber = c.String("serialnumber")
+				cr.SubjectAltNames = c.StringSlice("subject-alt-name")
 
 				caCrt, err := ioutil.ReadFile(c.String("ca"))
 				if err != nil {
