@@ -32,5 +32,5 @@ type CertificateRepository interface {
 	GetBySerialNumber(serialNumber string) (*Certificate, error)
 	Create(certificate *Certificate) error
 	Update(certificate *Certificate) error
-	Delete(certificate *Certificate) error
+	DeleteBySerialNumber(serialNumber string) error
 }
