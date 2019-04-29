@@ -70,9 +70,9 @@ The CA database can be one of the following flavours of sql: sqlite3, mysql, pos
 
 ## Development setup
 
-No external dependencies are needed. Just:
+This module uses [Go modules](https://github.com/golang/go/wiki/Modules) for dependency management.
+To run: 
 
-- `dep ensure`
 - `go run main.go`
 
 And this will output:
