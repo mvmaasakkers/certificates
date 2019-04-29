@@ -8,7 +8,6 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
-	"github.com/mvmaasakkers/certificates/database"
 	"math/big"
 	"time"
 )
@@ -91,7 +90,7 @@ func (req *CertRequest) GetPKIXName() pkix.Name {
 	return name
 }
 
-func (req *CertRequest) GenerateCertificate(db database.DB, caCrt []byte, caKey []byte) ([]byte, []byte, error) {
+func (req *CertRequest) GenerateCertificate(db DB, caCrt []byte, caKey []byte) ([]byte, []byte, error) {
 	if err := req.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -138,7 +137,7 @@ func (req *CertRequest) GenerateCertificate(db database.DB, caCrt []byte, caKey 
 	}
 
 	// Store in CA DB
-	dbCert := database.NewCertificate()
+	dbCert := NewCertificate()
 	dbCert.Status = "valid"
 	dbCert.ExpirationDate = req.NotAfter
 	dbCert.RevocationDate = nil

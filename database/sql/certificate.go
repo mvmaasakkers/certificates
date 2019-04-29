@@ -1,10 +1,10 @@
 package sql
 
 import (
-	"github.com/mvmaasakkers/certificates/database"
+	"github.com/mvmaasakkers/certificates/cert"
 )
 
-func (sqldb *sqlDB) GetCertificateRepository() database.CertificateRepository {
+func (sqldb *sqlDB) GetCertificateRepository() cert.CertificateRepository {
 	return &CertificateRepository{sqldb}
 }
 
@@ -12,24 +12,24 @@ type CertificateRepository struct {
 	sqldb *sqlDB
 }
 
-func (repo *CertificateRepository) List() ([]*database.Certificate, error) {
+func (repo *CertificateRepository) List() ([]*cert.Certificate, error) {
 
 	return nil, nil
 }
 
-func (repo *CertificateRepository) GetByUUID(uuid string) (*database.Certificate, error) {
+func (repo *CertificateRepository) GetByUUID(uuid string) (*cert.Certificate, error) {
 	return nil, nil
 }
 
-func (repo *CertificateRepository) GetBySerialNumber(serialNumber string) (*database.Certificate, error) {
-	crt := &database.Certificate{}
+func (repo *CertificateRepository) GetBySerialNumber(serialNumber string) (*cert.Certificate, error) {
+	crt := &cert.Certificate{}
 	if err := repo.sqldb.conn.Where("serial_number = ?", serialNumber).First(crt).Error; err != nil {
 		return nil, GetError(err)
 	}
 	return crt, nil
 }
 
-func (repo *CertificateRepository) Create(certificate *database.Certificate) error {
+func (repo *CertificateRepository) Create(certificate *cert.Certificate) error {
 
 	if err := repo.sqldb.conn.Create(certificate).Error; err != nil {
 		return GetError(err)
@@ -37,12 +37,12 @@ func (repo *CertificateRepository) Create(certificate *database.Certificate) err
 	return nil
 }
 
-func (repo *CertificateRepository) Update(certificate *database.Certificate) error {
+func (repo *CertificateRepository) Update(certificate *cert.Certificate) error {
 	return nil
 }
 
 
-func (repo *CertificateRepository) Delete(certificate *database.Certificate) error {
+func (repo *CertificateRepository) Delete(certificate *cert.Certificate) error {
 	return nil
 }
 
@@ -52,5 +52,5 @@ func (repo *CertificateRepository) DeleteBySerialNumber(serialNumber string) err
 
 type Certificate struct {
 	GormModel
-	database.Certificate
+	cert.Certificate
 }

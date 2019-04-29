@@ -1,6 +1,7 @@
 package test
 
 import (
+	"github.com/mvmaasakkers/certificates/cert"
 	"github.com/mvmaasakkers/certificates/database"
 	"testing"
 )
@@ -8,21 +9,21 @@ import (
 var certificateTests = []struct {
 	Id          string
 	Error       error
-	Certificate *database.Certificate
+	Certificate *cert.Certificate
 }{
 	{
 		Id:          "test.id",
 		Error:       nil,
-		Certificate: &database.Certificate{CommonName: "test.id", SerialNumber: "testserial"},
+		Certificate: &cert.Certificate{CommonName: "test.id", SerialNumber: "testserial"},
 	},
 	{
 		Id:          "testnotfound",
 		Error:       database.ErrorObjectNotFound,
-		Certificate: &database.Certificate{},
+		Certificate: &cert.Certificate{},
 	},
 }
 
-func TestCertificate_Certificate(t *testing.T, testDb database.DB) {
+func TestCertificate_Certificate(t *testing.T, testDb cert.DB) {
 	for _, test := range certificateTests {
 		cs := testDb.GetCertificateRepository()
 		_, err := cs.GetBySerialNumber(test.Certificate.SerialNumber)
@@ -36,19 +37,19 @@ func TestCertificate_Certificate(t *testing.T, testDb database.DB) {
 var createCertificateTests = []struct {
 	Error       error
 	DeleteError error
-	Certificate *database.Certificate
+	Certificate *cert.Certificate
 }{
 	{
-		Certificate: &database.Certificate{CommonName: "test.id", SerialNumber: "testserial"},
+		Certificate: &cert.Certificate{CommonName: "test.id", SerialNumber: "testserial"},
 		Error:       database.ErrorDuplicateObject,
 	},
 	{
-		Certificate: &database.Certificate{CommonName: "testid_2", SerialNumber: "two"},
+		Certificate: &cert.Certificate{CommonName: "testid_2", SerialNumber: "two"},
 		Error:       nil,
 	},
 }
 
-func TestCertificate_CreateCertificate(t *testing.T, testDb database.DB) {
+func TestCertificate_CreateCertificate(t *testing.T, testDb cert.DB) {
 	for _, test := range createCertificateTests {
 		cs := testDb.GetCertificateRepository()
 		err := cs.Create(test.Certificate)
