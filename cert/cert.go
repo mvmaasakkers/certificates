@@ -90,7 +90,7 @@ func (req *CertRequest) GetPKIXName() pkix.Name {
 	return name
 }
 
-func (req *CertRequest) GenerateCertificate(db DB, caCrt []byte, caKey []byte) ([]byte, []byte, error) {
+func (req *CertRequest) GenerateCertificate(certificateRepository CertificateRepository, caCrt []byte, caKey []byte) ([]byte, []byte, error) {
 	if err := req.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -144,7 +144,6 @@ func (req *CertRequest) GenerateCertificate(db DB, caCrt []byte, caKey []byte) (
 	dbCert.SerialNumber = req.SerialNumber
 	dbCert.CommonName = req.CommonName
 
-	certificateRepository := db.GetCertificateRepository()
 	if err := certificateRepository.Create(dbCert); err != nil {
 		return nil, nil, err
 	}

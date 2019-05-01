@@ -250,7 +250,7 @@ var certificateCommand = cli.Command{
 					return err
 				}
 
-				crt, key, err := cr.GenerateCertificate(db, caCrt, caKey)
+				crt, key, err := cr.GenerateCertificate(db.GetCertificateRepository(), caCrt, caKey)
 				if err != nil {
 					return err
 				}
