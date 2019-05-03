@@ -11,6 +11,6 @@ RUN GOOS=linux go build -a -o certificates main.go
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /app/
-COPY --from=builder /go/certificates .
+COPY --from=builder /src/certificates .
 
 ENTRYPOINT ["/app/certificates"]
