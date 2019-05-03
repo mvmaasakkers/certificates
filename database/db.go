@@ -2,6 +2,7 @@ package database
 
 import (
 	"github.com/google/uuid"
+	"math/big"
 	"time"
 )
 
@@ -16,20 +17,21 @@ type DB interface {
 type CertificateRepository interface {
 	List() ([]*Certificate, error)
 	GetByUUID(uuid string) (*Certificate, error)
-	GetBySerialNumber(serialNumber string) (*Certificate, error)
+	GetByNameSerialNumber(nameSerialNumber string) (*Certificate, error)
 	Create(certificate *Certificate) error
 	Update(certificate *Certificate) error
-	DeleteBySerialNumber(serialNumber string) error
+	DeleteByNameSerialNumber(nameSerialNumber string) error
 }
 
 type Certificate struct {
 	Meta
 
-	Status         string
-	ExpirationDate time.Time
-	RevocationDate *time.Time
-	SerialNumber   string `gorm:"unique"`
-	CommonName     string
+	Status           string
+	ExpirationDate   time.Time
+	RevocationDate   *time.Time
+	NameSerialNumber string   `gorm:"unique"`
+	SerialNumber     *big.Int `gorm:"unique"`
+	CommonName       string
 }
 
 func NewCertificate() *Certificate {

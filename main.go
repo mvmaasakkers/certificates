@@ -9,6 +9,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 	"io/ioutil"
 	"log"
+	"math/big"
 	"os"
 )
 
@@ -191,8 +192,13 @@ var certificateCommand = cli.Command{
 					Usage: "StreetAddress",
 				},
 				cli.StringFlag{
-					Name:  "serialnumber",
+					Name:  "name-serialnumber",
 					Value: "",
+					Usage: "Name SerialNumber",
+				},
+				cli.Int64Flag{
+					Name:  "serialnumber",
+					Value: 0,
 					Usage: "SerialNumber",
 				},
 				cli.StringSliceFlag{
@@ -209,16 +215,23 @@ var certificateCommand = cli.Command{
 				cr.Locality = c.String("locality")
 				cr.PostalCode = c.String("postalcode")
 				cr.StreetAddress = c.String("streetaddress")
-				cr.SerialNumber = c.String("serialnumber")
+				cr.NameSerialNumber = c.String("name-serialnumber")
+
 				cr.SubjectAltNames = c.StringSlice("subject-alt-name")
 
-				if cr.SerialNumber == "" {
+				if cr.NameSerialNumber == "" {
 					// Generating serial number
 					sn, err := uuid.NewRandom()
 					if err != nil {
 						return err
 					}
-					cr.SerialNumber = sn.String()
+					cr.NameSerialNumber = sn.String()
+				}
+
+				if c.Int64("serialnumber") != 0 {
+					cr.SerialNumber = big.NewInt(c.Int64("serialnumber"))
+				} else {
+					cr.SerialNumber, _ = cert.GenerateRandomBigInt()
 				}
 
 				caCrt, err := ioutil.ReadFile(c.String("ca"))
@@ -261,6 +274,7 @@ var certificateCommand = cli.Command{
 				dbCert.ExpirationDate = cr.NotAfter
 				dbCert.RevocationDate = nil
 				dbCert.SerialNumber = cr.SerialNumber
+				dbCert.NameSerialNumber = cr.NameSerialNumber
 				dbCert.CommonName = cr.CommonName
 
 				if err := db.GetCertificateRepository().Create(dbCert); err != nil {

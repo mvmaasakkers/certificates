@@ -20,10 +20,14 @@ type CARequest struct {
 	PostalCode    string
 	CommonName    string
 
+	SerialNumber     *big.Int
+	NameSerialNumber string
+
 	NotBefore time.Time
 	NotAfter  time.Time
 }
 
+// NewCARequest will create a new CARequest struct and set the NotBefore to now and the NotAfter to one day from now
 func NewCARequest() *CARequest {
 	return &CARequest{
 		NotBefore: time.Now(),
@@ -31,6 +35,7 @@ func NewCARequest() *CARequest {
 	}
 }
 
+// Validate will check the validity of the CARequest object
 func (req *CARequest) Validate() error {
 	if req.CommonName == "" {
 		return ErrorInvalidCommonName
@@ -39,6 +44,7 @@ func (req *CARequest) Validate() error {
 	return nil
 }
 
+// GetPKIXName extracts the CARequest object into a PKIX Name format for usage in constructing the certificate
 func (req *CARequest) GetPKIXName() pkix.Name {
 	name := pkix.Name{}
 
@@ -74,16 +80,30 @@ func (req *CARequest) GetPKIXName() pkix.Name {
 		name.CommonName = req.CommonName
 	}
 
+	if req.NameSerialNumber != "" {
+		name.SerialNumber = req.NameSerialNumber
+	}
+
 	return name
 }
 
+// GenerateCA will generate a CA certificate pair and will return certificate, key and a possible error
 func (req *CARequest) GenerateCA() ([]byte, []byte, error) {
 	if err := req.Validate(); err != nil {
 		return nil, nil, err
 	}
 
+	if req.SerialNumber == nil {
+		randInt, err := GenerateRandomBigInt()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		req.SerialNumber = randInt
+	}
+
 	ca := &x509.Certificate{
-		SerialNumber:          big.NewInt(1653),
+		SerialNumber:          req.SerialNumber,
 		Subject:               req.GetPKIXName(),
 		NotBefore:             req.NotBefore,
 		NotAfter:              req.NotAfter,

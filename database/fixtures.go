@@ -17,7 +17,7 @@ func InsertFixtures(db DB) {
 func ClearFixtures(db DB) {
 	cs := db.GetCertificateRepository()
 	for _, item := range fixtureCertificates {
-		if err := cs.DeleteBySerialNumber(item.SerialNumber); err != nil {
+		if err := cs.DeleteByNameSerialNumber(item.NameSerialNumber); err != nil {
 			log.Printf("%s: certificate delete error %+v\n", item.SerialNumber, err)
 		}
 	}
@@ -29,7 +29,7 @@ func GetFixtureCertificates() []*Certificate {
 
 var fixtureCertificates = []*Certificate{
 	{
-		SerialNumber: "testserial",
+		NameSerialNumber: "testserial",
 		CommonName:   "test.id",
 	},
 }

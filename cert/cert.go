@@ -20,13 +20,15 @@ type CertRequest struct {
 	StreetAddress   string
 	PostalCode      string
 	CommonName      string
-	SerialNumber    string
+	SerialNumber    *big.Int
+	NameSerialNumber string
 	SubjectAltNames []string
 
 	NotBefore time.Time
 	NotAfter  time.Time
 }
 
+// NewCertRequest will create a new CertRequest struct and set the NotBefore to now and the NotAfter to one day from now
 func NewCertRequest() *CertRequest {
 	return &CertRequest{
 		NotBefore: time.Now(),
@@ -83,8 +85,8 @@ func (req *CertRequest) GetPKIXName() pkix.Name {
 		name.CommonName = req.CommonName
 	}
 
-	if req.SerialNumber != "" {
-		name.SerialNumber = req.SerialNumber
+	if req.NameSerialNumber != "" {
+		name.SerialNumber = req.NameSerialNumber
 	}
 
 	return name
@@ -105,8 +107,17 @@ func (req *CertRequest) GenerateCertificate(caCrt []byte, caKey []byte) ([]byte,
 		return nil, nil, err
 	}
 
+	if req.SerialNumber == nil {
+		randInt, err := GenerateRandomBigInt()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		req.SerialNumber = randInt
+	}
+
 	cert := &x509.Certificate{
-		SerialNumber: big.NewInt(1658),
+		SerialNumber: req.SerialNumber,
 		Subject:      req.GetPKIXName(),
 		NotBefore:    req.NotBefore,
 		NotAfter:     req.NotAfter,

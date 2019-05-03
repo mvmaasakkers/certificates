@@ -13,7 +13,7 @@ var certificateTests = []struct {
 	{
 		Id:          "test.id",
 		Error:       nil,
-		Certificate: &database.Certificate{CommonName: "test.id", SerialNumber: "testserial"},
+		Certificate: &database.Certificate{CommonName: "test.id", NameSerialNumber: "testserial"},
 	},
 	{
 		Id:          "testnotfound",
@@ -24,7 +24,7 @@ var certificateTests = []struct {
 
 func TestCertificate_Certificate(t *testing.T, certificateRepository database.CertificateRepository) {
 	for _, test := range certificateTests {
-		_, err := certificateRepository.GetBySerialNumber(test.Certificate.SerialNumber)
+		_, err := certificateRepository.GetByNameSerialNumber(test.Certificate.NameSerialNumber)
 		if err != test.Error {
 			t.Errorf("%s: expected error %+v, got error %+v", test.Id, test.Error, err)
 			t.Fail()
@@ -38,11 +38,11 @@ var createCertificateTests = []struct {
 	Certificate *database.Certificate
 }{
 	{
-		Certificate: &database.Certificate{CommonName: "test.id", SerialNumber: "testserial"},
+		Certificate: &database.Certificate{CommonName: "test.id", NameSerialNumber: "testserial"},
 		Error:       database.ErrorDuplicateObject,
 	},
 	{
-		Certificate: &database.Certificate{CommonName: "testid_2", SerialNumber: "two"},
+		Certificate: &database.Certificate{CommonName: "testid_2", NameSerialNumber: "two"},
 		Error:       nil,
 	},
 }
@@ -55,7 +55,7 @@ func TestCertificate_CreateCertificate(t *testing.T, certificateRepository datab
 			t.Fail()
 		}
 
-		if err := certificateRepository.DeleteBySerialNumber(test.Certificate.SerialNumber); err != test.DeleteError {
+		if err := certificateRepository.DeleteByNameSerialNumber(test.Certificate.NameSerialNumber); err != test.DeleteError {
 			t.Errorf("%s: expected delete error %+v, got error %+v", test.Certificate.SerialNumber, test.Error, err)
 			t.Fail()
 		}

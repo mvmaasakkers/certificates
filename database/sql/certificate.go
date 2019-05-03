@@ -21,9 +21,9 @@ func (repo *CertificateRepository) GetByUUID(uuid string) (*database.Certificate
 	return nil, nil
 }
 
-func (repo *CertificateRepository) GetBySerialNumber(serialNumber string) (*database.Certificate, error) {
+func (repo *CertificateRepository) GetByNameSerialNumber(nameSerialNumber string) (*database.Certificate, error) {
 	crt := &database.Certificate{}
-	if err := repo.sqldb.conn.Where("serial_number = ?", serialNumber).First(crt).Error; err != nil {
+	if err := repo.sqldb.conn.Where("name_serial_number = ?", nameSerialNumber).First(crt).Error; err != nil {
 		return nil, GetError(err)
 	}
 	return crt, nil
@@ -46,7 +46,7 @@ func (repo *CertificateRepository) Delete(certificate *database.Certificate) err
 	return nil
 }
 
-func (repo *CertificateRepository) DeleteBySerialNumber(serialNumber string) error {
+func (repo *CertificateRepository) DeleteByNameSerialNumber(nameSerialNumber string) error {
 	return nil
 }
 

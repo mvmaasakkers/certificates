@@ -1,22 +1,24 @@
 package cert
 
 import (
+	"math/big"
 	"testing"
 	"time"
 )
 
 func TestCertRequest_Validate(t *testing.T) {
 	type fields struct {
-		Organization  string
-		Country       string
-		Province      string
-		Locality      string
-		StreetAddress string
-		PostalCode    string
-		CommonName    string
-		SerialNumber  string
-		NotBefore     time.Time
-		NotAfter      time.Time
+		Organization     string
+		Country          string
+		Province         string
+		Locality         string
+		StreetAddress    string
+		PostalCode       string
+		CommonName       string
+		SerialNumber     *big.Int
+		NameSerialNumber string
+		NotBefore        time.Time
+		NotAfter         time.Time
 	}
 	tests := []struct {
 		name    string
@@ -26,32 +28,33 @@ func TestCertRequest_Validate(t *testing.T) {
 		{
 			name: "invalid_common_name",
 			fields: fields{
-				Organization:  "",
-				Country:       "",
-				Province:      "",
-				Locality:      "",
-				StreetAddress: "",
-				PostalCode:    "",
-				CommonName:    "",
-				SerialNumber:  "",
-				NotBefore:     time.Time{},
-				NotAfter:      time.Time{},
+				Organization:     "",
+				Country:          "",
+				Province:         "",
+				Locality:         "",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "",
+				SerialNumber:     nil,
+				NameSerialNumber: "",
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
 			},
 			wantErr: true,
 		},
 		{
 			name: "valid_common_name",
 			fields: fields{
-				Organization:  "",
-				Country:       "",
-				Province:      "",
-				Locality:      "",
-				StreetAddress: "",
-				PostalCode:    "",
-				CommonName:    "valid.common.name",
-				SerialNumber:  "",
-				NotBefore:     time.Time{},
-				NotAfter:      time.Time{},
+				Organization:     "",
+				Country:          "",
+				Province:         "",
+				Locality:         "",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "valid.common.name",
+				NameSerialNumber: "",
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
 			},
 			wantErr: false,
 		},
@@ -59,16 +62,16 @@ func TestCertRequest_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			req := &CertRequest{
-				Organization:  tt.fields.Organization,
-				Country:       tt.fields.Country,
-				Province:      tt.fields.Province,
-				Locality:      tt.fields.Locality,
-				StreetAddress: tt.fields.StreetAddress,
-				PostalCode:    tt.fields.PostalCode,
-				CommonName:    tt.fields.CommonName,
-				SerialNumber:  tt.fields.SerialNumber,
-				NotBefore:     tt.fields.NotBefore,
-				NotAfter:      tt.fields.NotAfter,
+				Organization:     tt.fields.Organization,
+				Country:          tt.fields.Country,
+				Province:         tt.fields.Province,
+				Locality:         tt.fields.Locality,
+				StreetAddress:    tt.fields.StreetAddress,
+				PostalCode:       tt.fields.PostalCode,
+				CommonName:       tt.fields.CommonName,
+				NameSerialNumber: tt.fields.NameSerialNumber,
+				NotBefore:        tt.fields.NotBefore,
+				NotAfter:         tt.fields.NotAfter,
 			}
 			if err := req.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("CertRequest.Validate() error = %v, wantErr %v", err, tt.wantErr)
@@ -79,17 +82,18 @@ func TestCertRequest_Validate(t *testing.T) {
 
 func TestCertRequest_GenerateCertificate(t *testing.T) {
 	type fields struct {
-		Organization    string
-		Country         string
-		Province        string
-		Locality        string
-		StreetAddress   string
-		PostalCode      string
-		CommonName      string
-		SerialNumber    string
-		SubjectAltNames []string
-		NotBefore       time.Time
-		NotAfter        time.Time
+		Organization     string
+		Country          string
+		Province         string
+		Locality         string
+		StreetAddress    string
+		PostalCode       string
+		CommonName       string
+		SerialNumber     *big.Int
+		NameSerialNumber string
+		SubjectAltNames  []string
+		NotBefore        time.Time
+		NotAfter         time.Time
 	}
 	type args struct {
 		caCrt []byte
@@ -106,17 +110,17 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 		{
 			name: "invalid_common_name",
 			fields: fields{
-				Organization:  "",
-				Country:       "",
-				Province:      "",
-				Locality:      "",
-				StreetAddress: "",
-				PostalCode:    "",
-				CommonName:    "",
-				SerialNumber:  "",
+				Organization:    "",
+				Country:         "",
+				Province:        "",
+				Locality:        "",
+				StreetAddress:   "",
+				PostalCode:      "",
+				CommonName:      "",
+				NameSerialNumber:    "",
 				SubjectAltNames: []string{},
-				NotBefore:     time.Time{},
-				NotAfter:      time.Time{},
+				NotBefore:       time.Time{},
+				NotAfter:        time.Time{},
 			},
 			args: args{
 				caCrt: nil,
@@ -129,17 +133,17 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 		{
 			name: "invalid_subject_alt_name",
 			fields: fields{
-				Organization:  "",
-				Country:       "",
-				Province:      "",
-				Locality:      "",
-				StreetAddress: "",
-				PostalCode:    "",
-				CommonName:    "cn",
-				SerialNumber:  "",
+				Organization:    "",
+				Country:         "",
+				Province:        "",
+				Locality:        "",
+				StreetAddress:   "",
+				PostalCode:      "",
+				CommonName:      "cn",
+				NameSerialNumber:    "",
 				SubjectAltNames: []string{""},
-				NotBefore: time.Time{},
-				NotAfter:  time.Time{},
+				NotBefore:       time.Time{},
+				NotAfter:        time.Time{},
 			},
 			args: args{
 				caCrt: nil,
@@ -160,7 +164,7 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 				StreetAddress: tt.fields.StreetAddress,
 				PostalCode:    tt.fields.PostalCode,
 				CommonName:    tt.fields.CommonName,
-				SerialNumber:  tt.fields.SerialNumber,
+				NameSerialNumber:  tt.fields.NameSerialNumber,
 				NotBefore:     tt.fields.NotBefore,
 				NotAfter:      tt.fields.NotAfter,
 			}
