@@ -20,8 +20,10 @@ type CertRequest struct {
 	StreetAddress   string
 	PostalCode      string
 	CommonName      string
+
 	SerialNumber    *big.Int
 	NameSerialNumber string
+
 	SubjectAltNames []string
 
 	NotBefore time.Time
@@ -36,6 +38,7 @@ func NewCertRequest() *CertRequest {
 	}
 }
 
+// Validate will check the validity of the CertRequest object
 func (req *CertRequest) Validate() error {
 	if req.CommonName == "" {
 		return ErrorInvalidCommonName
@@ -50,6 +53,7 @@ func (req *CertRequest) Validate() error {
 	return nil
 }
 
+// GetPKIXName extracts the CertRequest object into a PKIX Name format for usage in constructing the certificate
 func (req *CertRequest) GetPKIXName() pkix.Name {
 	name := pkix.Name{}
 
@@ -92,7 +96,8 @@ func (req *CertRequest) GetPKIXName() pkix.Name {
 	return name
 }
 
-func (req *CertRequest) GenerateCertificate(caCrt []byte, caKey []byte) ([]byte, []byte, error) {
+// GenerateCertificate will generate a signed certificate pair and will return certificate, key and a possible error
+func GenerateCertificate(req *CertRequest, caCrt []byte, caKey []byte) ([]byte, []byte, error) {
 	if err := req.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -148,4 +153,53 @@ func (req *CertRequest) GenerateCertificate(caCrt []byte, caKey []byte) ([]byte,
 	}
 
 	return pemOut.Bytes(), pemKeyOut.Bytes(), nil
+}
+
+// GenerateCA will generate a CA certificate pair and will return certificate, key and a possible error
+func GenerateCA(req *CertRequest) ([]byte, []byte, error) {
+	if err := req.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	if req.SerialNumber == nil {
+		randInt, err := GenerateRandomBigInt()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		req.SerialNumber = randInt
+	}
+
+	ca := &x509.Certificate{
+		SerialNumber:          req.SerialNumber,
+		Subject:               req.GetPKIXName(),
+		NotBefore:             req.NotBefore,
+		NotAfter:              req.NotAfter,
+		IsCA:                  true,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
+		BasicConstraintsValid: true,
+	}
+
+	priv, err := rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		return nil, nil, err
+	}
+	pub := &priv.PublicKey
+	ca_b, err := x509.CreateCertificate(rand.Reader, ca, ca, pub, priv)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	crtB := bytes.NewBuffer([]byte{})
+	if err := pem.Encode(crtB, &pem.Block{Type: "CERTIFICATE", Bytes: ca_b}); err != nil {
+		return nil, nil, err
+	}
+
+	keyB := bytes.NewBuffer([]byte{})
+	if err := pem.Encode(keyB, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(priv)}); err != nil {
+		return nil, nil, err
+	}
+
+	return crtB.Bytes(), keyB.Bytes(), nil
 }

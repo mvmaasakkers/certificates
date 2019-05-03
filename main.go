@@ -87,7 +87,7 @@ var certificateCommand = cli.Command{
 			},
 			Action: func(c *cli.Context) error {
 
-				ca := cert.NewCARequest()
+				ca := cert.NewCertRequest()
 				ca.CommonName = c.String("cn")
 				ca.Organization = c.String("org")
 				ca.Country = c.String("country")
@@ -96,7 +96,7 @@ var certificateCommand = cli.Command{
 				ca.PostalCode = c.String("postalcode")
 				ca.StreetAddress = c.String("streetaddress")
 
-				caCrt, caKey, err := ca.GenerateCA()
+				caCrt, caKey, err := cert.GenerateCA(ca)
 				if err != nil {
 					return err
 				}
@@ -263,7 +263,7 @@ var certificateCommand = cli.Command{
 					return err
 				}
 
-				crt, key, err := cr.GenerateCertificate(caCrt, caKey)
+				crt, key, err := cert.GenerateCertificate(cr, caCrt, caKey)
 				if err != nil {
 					return err
 				}
