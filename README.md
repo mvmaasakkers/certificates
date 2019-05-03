@@ -16,6 +16,14 @@ generation can be easily embedded.
 
 Documentation can be found [here](https://godoc.org/github.com/mvmaasakkers/certificates/cert).
 
+# CLI Tool
+
+## Installation
+
+Currently you can use it by building it locally or with docker:
+
+`docker run mvmaasakkers/certificates cert gen-ca --cn=*.test.domain --stdout`
+
 ## Usage
 
 ### Generate a CA set
