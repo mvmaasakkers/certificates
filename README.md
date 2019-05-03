@@ -20,7 +20,7 @@ Documentation can be found [here](https://godoc.org/github.com/mvmaasakkers/cert
 
 ## Installation
 
-Currently you can use it by building it locally or with docker:
+Currently you can use it by building it locally, checking the [releases](https://github.com/mvmaasakkers/certificates/releases) or with docker:
 
 `docker run mvmaasakkers/certificates cert gen-ca --cn=*.test.domain --stdout`
 
