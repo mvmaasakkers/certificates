@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+// CertRequest is the struct needed to generate a CA or Certificate pair
 type CertRequest struct {
 	Organization    string
 	Country         string
@@ -39,6 +40,10 @@ func NewCertRequest() *CertRequest {
 }
 
 // Validate will check the validity of the CertRequest object
+//
+// The checks are:
+// - A Common Name is mandatory
+// - If a list of SubjectAltNames is given, none of them can be empty
 func (req *CertRequest) Validate() error {
 	if req.CommonName == "" {
 		return ErrorInvalidCommonName
@@ -54,6 +59,7 @@ func (req *CertRequest) Validate() error {
 }
 
 // GetPKIXName extracts the CertRequest object into a PKIX Name format for usage in constructing the certificate
+// The NameSerialNumber is used as pkix.Name.SerialNumber here (if given).
 func (req *CertRequest) GetPKIXName() pkix.Name {
 	name := pkix.Name{}
 
@@ -97,6 +103,11 @@ func (req *CertRequest) GetPKIXName() pkix.Name {
 }
 
 // GenerateCertificate will generate a signed certificate pair and will return certificate, key and a possible error
+// The Generated key will be in RSA format and has a bit size of 4096 and output of the Certificate
+// and Key will be returned in PEM format as bytes.
+//
+// The certificate will be signed by the given CA Certificate pair (caCrt and caKey). Validity of the CA Certificate
+// pair is checked.
 func GenerateCertificate(req *CertRequest, caCrt []byte, caKey []byte) ([]byte, []byte, error) {
 	if err := req.Validate(); err != nil {
 		return nil, nil, err
@@ -156,6 +167,8 @@ func GenerateCertificate(req *CertRequest, caCrt []byte, caKey []byte) ([]byte, 
 }
 
 // GenerateCA will generate a CA certificate pair and will return certificate, key and a possible error
+// The Generated key will be in RSA format and has a bit size of 4096 and output of the Certificate
+// and Key will be returned in PEM format as bytes.
 func GenerateCA(req *CertRequest) ([]byte, []byte, error) {
 	if err := req.Validate(); err != nil {
 		return nil, nil, err

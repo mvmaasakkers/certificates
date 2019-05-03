@@ -8,65 +8,67 @@ This is an opinionated helper for generating tls certificates.
 It outputs only in PEM format but this enables you easily generate certificate
 chains for MA TLS.
 
+## cert package
+
+The cert package can be used directly in your application without the need of the command 
+line interface, underlying database layer or external dependencies. This way certificate 
+generation can be easily embedded. 
+
+Documentation can be found [here](https://godoc.org/github.com/mvmaasakkers/certificates/cert).
+
 ## Usage
 
 ### Generate a CA set
 
-`certificate generate-ca`
+You can generate a CA set by using the generate-ca subcommand like the following example:
+
+`certificates cert gen-ca --cn=*.test.domain --stdout`
+
+This will output the key and certificate directly to stdout like this (parts are omitted for readability):
 
 ```
-NAME:
-   Certificates certificate generate-ca - generate ca
+-----BEGIN RSA PRIVATE KEY-----
+MIIJJwIBAAKCAgEA0txN/brNlBcGrU8mAxL8V19pS1dWEVVTF82LDahI7FMsPPkM
+sg5iBCLwYJhnVRPucUmcGC1NyljCy/yW0Cbwl5aNWozAfEkiUpWsukn/ZcMuXvac
+qsPRK0Xswbr305NDRnlphoeutyzXAhW2P4FQGCwSfx/Mlaezphc7AreLKg==
+-----END RSA PRIVATE KEY-----
 
-USAGE:
-   Certificates certificate generate-ca [command options] [arguments...]
+-----BEGIN CERTIFICATE-----
+MIIE3zCCAsegAwIBAgIFANHEYb4wDQYJKoZIhvcNAQELBQAwDzENMAsGA1UEAxME
+P9g8SpNaf6jNS0ULG8+DJ7dwdHes7IWA0BtjDkur4Ya+ey/FwowgMeEnc/h10Adc
+az7b
+-----END CERTIFICATE-----
 
-OPTIONS:
-   --ca value             Filename to write the ca cert to (default: "ca.crt")
-   --ca-key value         Filename to write the ca key to (default: "ca.key")
-   --cn value             Common name attached to the ca cert
-   --org value            Organisation
-   --country value        Country
-   --province value       Province
-   --locality value       Locality
-   --postalcode value     PostalCode
-   --streetaddress value  StreetAddress
 ```
+
+By default the certificates are written to files `ca.key` and `ca.crt`.
 
 ### Generate a certificate
 
-This needs a pregenerated CA certificate and key (see "Generate a CA set")
+This needs a pregenerated CA certificate and key (see "Generate a CA set").
 
-`certificate generate`
+To generate a signed certificate pair you can use the following example:
+
+`certificates cert gen --cn=local.test.domain --stdout`
+
+This will output the key and certificate directly to stdout like this (parts are omitted for readability):
 
 ```
-NAME:
-   Certificates certificate generate - generate certificate
+-----BEGIN RSA PRIVATE KEY-----
+MIIJFAIBAAKCAf0Z7/5ZYgOo4gHfAPAPN0vKWEVJ5D97wvnYUq00DcaRPCZZopXl
+XUcctgAb3kw27ohTm31KnVEnN8ibeUg2fz+LO/xYVvhD2BMkoe1gk/2JAogPUi1l
+jWjI7fuKGwlyHimeYnUx1ADRlShBgHGr
+-----END RSA PRIVATE KEY-----
 
-USAGE:
-   Certificates certificate generate [command options] [arguments...]
+-----BEGIN CERTIFICATE-----
+MIIE/TCCAuWgAwIBAgIFFPmGQ70wDQYJKoZIhvcNAQELBQAwDzENMAsGA1UEAxME
+V964wCgh6TgfUtt9RabcM3MWtAR18N0vedYg46jhxDa1b+/brQWLuxXDsKIVHrRP
+M6ZzVSUF1PH+Ok2Fm7EP26Yax3RkoPrgmlLqL/1fRJaJ
+-----END CERTIFICATE-----
 
-OPTIONS:
-   --stdout                   Send pem to stdout instead of to file
-   --ca value                 CA Certificate file (default: "ca.crt")
-   --ca-key value             CA Key file (default: "ca.key")
-   --ca-db-type value         CA DB type (sql) (default: "sql")
-   --ca-db-sql-dialect value  SQL Dialect (default: "sqlite3")
-   --ca-db-sql-cs value       SQL Connection String (default: "sql.db")
-   --crt value                Filename to write certificate to (default: "certificate.crt")
-   --key value                Filename to write key to (default: "certificate.key")
-   --cn value                 Common name attached to the cert
-   --org value                Organisation
-   --country value            Country
-   --province value           Province
-   --locality value           Locality
-   --postalcode value         PostalCode
-   --streetaddress value      StreetAddress
-   --serialnumber value       SerialNumber
-   --subject-alt-name value   Subject Alt Name
 ```
 
-The CA database can be one of the following flavours of sql: sqlite3, mysql, postgresql or mssql. 
+By default a sqlite (ca.db) database is created to keep track of unique certificate serialnumbers. The CA database can be one of the following flavours of sql: sqlite3, mysql, postgresql or mssql. 
 
 ## Development setup
 
@@ -85,7 +87,7 @@ USAGE:
    main [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.0.1-alpha2
+   v0.0.1-alpha4
 
 DESCRIPTION:
    An opinionated TLS certificate generator.

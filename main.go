@@ -15,9 +15,9 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "Certificates"
+	app.Name = "certificates"
 	app.Usage = "An opinionated TLS certificate generator."
-	app.Version = "v0.0.1-alpha3"
+	app.Version = "v0.0.1-alpha4"
 	app.Description = "An opinionated TLS certificate generator."
 	app.Commands = []cli.Command{
 		certificateCommand,
@@ -37,8 +37,13 @@ var certificateCommand = cli.Command{
 		{
 			Name:    "generate-ca",
 			Aliases: []string{"gen-ca"},
-			Usage:   "generate ca",
+			Usage:   "Generate a CA pair",
+			Description: `To generate a CA pair you need to supply at least a valid name.`,
 			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "stdout",
+					Usage: "Send pem to stdout instead of to file",
+				},
 				cli.StringFlag{
 					Name:  "ca",
 					Value: "ca.crt",
@@ -101,6 +106,12 @@ var certificateCommand = cli.Command{
 					return err
 				}
 
+				if c.Bool("stdout") {
+					fmt.Println(string(caKey))
+					fmt.Println(string(caCrt))
+					return nil
+				}
+
 				if err := ioutil.WriteFile(c.String("ca"), caCrt, 0600); err != nil {
 					return err
 				}
@@ -115,7 +126,7 @@ var certificateCommand = cli.Command{
 		{
 			Name:    "generate",
 			Aliases: []string{"gen"},
-			Usage:   "generate certificate",
+			Usage:   "Generate a signed certificate pair",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "stdout",
@@ -143,7 +154,7 @@ var certificateCommand = cli.Command{
 				},
 				cli.StringFlag{
 					Name:  "ca-db-sql-cs",
-					Value: "sql.db",
+					Value: "ca.db",
 					Usage: "SQL Connection String",
 				},
 				cli.StringFlag{
