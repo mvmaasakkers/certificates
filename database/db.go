@@ -1,4 +1,4 @@
-package cert
+package database
 
 import (
 	"github.com/google/uuid"

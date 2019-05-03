@@ -1,7 +1,6 @@
 package sql
 
 import (
-	"github.com/mvmaasakkers/certificates/cert"
 	"github.com/mvmaasakkers/certificates/database"
 	"log"
 	"os"
@@ -10,7 +9,7 @@ import (
 )
 
 var (
-	testDB cert.DB
+	testDB database.DB
 )
 
 func TestMain(m *testing.M) {

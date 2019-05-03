@@ -2,7 +2,7 @@ package sql
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/mvmaasakkers/certificates/cert"
+	"github.com/mvmaasakkers/certificates/database"
 )
 
 type sqlDB struct {
@@ -11,7 +11,7 @@ type sqlDB struct {
 	conn *gorm.DB
 }
 
-func NewDB(dialect, connectionString string) cert.DB {
+func NewDB(dialect, connectionString string) database.DB {
 	sqldb := &sqlDB{
 		dialect: dialect,
 		connectionString: connectionString,

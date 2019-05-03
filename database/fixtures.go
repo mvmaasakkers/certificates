@@ -1,11 +1,10 @@
 package database
 
 import (
-	"github.com/mvmaasakkers/certificates/cert"
 	"log"
 )
 
-func InsertFixtures(db cert.DB) {
+func InsertFixtures(db DB) {
 	cs := db.GetCertificateRepository()
 	for _, item := range fixtureCertificates {
 		if err := cs.Create(item); err != nil {
@@ -15,7 +14,7 @@ func InsertFixtures(db cert.DB) {
 
 }
 
-func ClearFixtures(db cert.DB) {
+func ClearFixtures(db DB) {
 	cs := db.GetCertificateRepository()
 	for _, item := range fixtureCertificates {
 		if err := cs.DeleteBySerialNumber(item.SerialNumber); err != nil {
@@ -24,11 +23,11 @@ func ClearFixtures(db cert.DB) {
 	}
 }
 
-func GetFixtureCertificates() []*cert.Certificate {
+func GetFixtureCertificates() []*Certificate {
 	return fixtureCertificates
 }
 
-var fixtureCertificates = []*cert.Certificate{
+var fixtureCertificates = []*Certificate{
 	{
 		SerialNumber: "testserial",
 		CommonName:   "test.id",

@@ -231,7 +231,7 @@ var certificateCommand = cli.Command{
 				}
 
 				// DB
-				var db cert.DB
+				var db database.DB
 				switch c.String("ca-db-type") {
 				case "sql":
 					db = sql.NewDB(c.String("ca-db-sql-dialect"), c.String("ca-db-sql-cs"))
@@ -250,8 +250,20 @@ var certificateCommand = cli.Command{
 					return err
 				}
 
-				crt, key, err := cr.GenerateCertificate(db.GetCertificateRepository(), caCrt, caKey)
+				crt, key, err := cr.GenerateCertificate(caCrt, caKey)
 				if err != nil {
+					return err
+				}
+
+				// Store in CA DB
+				dbCert := database.NewCertificate()
+				dbCert.Status = "valid"
+				dbCert.ExpirationDate = cr.NotAfter
+				dbCert.RevocationDate = nil
+				dbCert.SerialNumber = cr.SerialNumber
+				dbCert.CommonName = cr.CommonName
+
+				if err := db.GetCertificateRepository().Create(dbCert); err != nil {
 					return err
 				}
 
