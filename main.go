@@ -18,7 +18,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "certificates"
 	app.Usage = "An opinionated TLS certificate generator."
-	app.Version = "v0.0.1-alpha4"
+	app.Version = "v0.0.1-beta1"
 	app.Description = "An opinionated TLS certificate generator."
 	app.Commands = []cli.Command{
 		certificateCommand,

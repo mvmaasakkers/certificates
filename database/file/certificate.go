@@ -41,7 +41,7 @@ func (repo *CertificateRepository) Create(certificate *database.Certificate) err
 	if repo.db.state.Certificates == nil {
 		repo.db.state.Certificates = make(map[string]*database.Certificate, 0)
 	}
-	
+
 	if _, ok := repo.db.state.Certificates[certificate.CommonName]; ok {
 		return database.ErrorDuplicateObject
 	}
