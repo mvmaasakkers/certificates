@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mvmaasakkers/certificates/cert"
 	"github.com/mvmaasakkers/certificates/database"
+	"github.com/mvmaasakkers/certificates/database/file"
 	"github.com/mvmaasakkers/certificates/database/sql"
 	"gopkg.in/urfave/cli.v1"
 	"io/ioutil"
@@ -144,17 +145,23 @@ var certificateCommand = cli.Command{
 				},
 				cli.StringFlag{
 					Name:  "ca-db-type",
-					Value: "sql",
-					Usage: "CA DB type (sql)",
+					Value: "file",
+					Usage: "CA DB type (file)",
+				},
+
+				cli.StringFlag{
+					Name:  "ca-db-file",
+					Value: "file.db",
+					Usage: "File DB filename",
 				},
 				cli.StringFlag{
 					Name:  "ca-db-sql-dialect",
-					Value: "sqlite3",
+					Value: "mysql",
 					Usage: "SQL Dialect",
 				},
 				cli.StringFlag{
 					Name:  "ca-db-sql-cs",
-					Value: "ca.db",
+					Value: "user:pass@tcp(localhost:3306)/test?charset=utf8&parseTime=True",
 					Usage: "SQL Connection String",
 				},
 				cli.StringFlag{
@@ -259,6 +266,8 @@ var certificateCommand = cli.Command{
 				switch c.String("ca-db-type") {
 				case "sql":
 					db = sql.NewDB(c.String("ca-db-sql-dialect"), c.String("ca-db-sql-cs"))
+				case "file":
+					db = file.NewDB(c.String("ca-db-file"))
 				}
 
 				if db == nil {
