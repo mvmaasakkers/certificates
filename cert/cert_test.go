@@ -19,6 +19,7 @@ func TestCertRequest_Validate(t *testing.T) {
 		NameSerialNumber string
 		NotBefore        time.Time
 		NotAfter         time.Time
+		SubjectAltNames  []string
 	}
 	tests := []struct {
 		name    string
@@ -58,6 +59,23 @@ func TestCertRequest_Validate(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "invalid_subject_alt_name",
+			fields: fields{
+				Organization:     "",
+				Country:          "",
+				Province:         "",
+				Locality:         "",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "valid.common.name",
+				SubjectAltNames:  []string{""},
+				NameSerialNumber: "",
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -72,6 +90,7 @@ func TestCertRequest_Validate(t *testing.T) {
 				NameSerialNumber: tt.fields.NameSerialNumber,
 				NotBefore:        tt.fields.NotBefore,
 				NotAfter:         tt.fields.NotAfter,
+				SubjectAltNames:  tt.fields.SubjectAltNames,
 			}
 			if err := req.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("CertRequest.Validate() error = %v, wantErr %v", err, tt.wantErr)
@@ -110,17 +129,17 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 		{
 			name: "invalid_common_name",
 			fields: fields{
-				Organization:    "",
-				Country:         "",
-				Province:        "",
-				Locality:        "",
-				StreetAddress:   "",
-				PostalCode:      "",
-				CommonName:      "",
-				NameSerialNumber:    "",
-				SubjectAltNames: []string{},
-				NotBefore:       time.Time{},
-				NotAfter:        time.Time{},
+				Organization:     "",
+				Country:          "",
+				Province:         "",
+				Locality:         "",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "",
+				NameSerialNumber: "",
+				SubjectAltNames:  []string{},
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
 			},
 			args: args{
 				caCrt: nil,
@@ -133,17 +152,17 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 		{
 			name: "invalid_subject_alt_name",
 			fields: fields{
-				Organization:    "",
-				Country:         "",
-				Province:        "",
-				Locality:        "",
-				StreetAddress:   "",
-				PostalCode:      "",
-				CommonName:      "cn",
-				NameSerialNumber:    "",
-				SubjectAltNames: []string{""},
-				NotBefore:       time.Time{},
-				NotAfter:        time.Time{},
+				Organization:     "",
+				Country:          "",
+				Province:         "",
+				Locality:         "",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "cn",
+				NameSerialNumber: "",
+				SubjectAltNames:  []string{""},
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
 			},
 			args: args{
 				caCrt: nil,
@@ -157,16 +176,16 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			req := &CertRequest{
-				Organization:  tt.fields.Organization,
-				Country:       tt.fields.Country,
-				Province:      tt.fields.Province,
-				Locality:      tt.fields.Locality,
-				StreetAddress: tt.fields.StreetAddress,
-				PostalCode:    tt.fields.PostalCode,
-				CommonName:    tt.fields.CommonName,
-				NameSerialNumber:  tt.fields.NameSerialNumber,
-				NotBefore:     tt.fields.NotBefore,
-				NotAfter:      tt.fields.NotAfter,
+				Organization:     tt.fields.Organization,
+				Country:          tt.fields.Country,
+				Province:         tt.fields.Province,
+				Locality:         tt.fields.Locality,
+				StreetAddress:    tt.fields.StreetAddress,
+				PostalCode:       tt.fields.PostalCode,
+				CommonName:       tt.fields.CommonName,
+				NameSerialNumber: tt.fields.NameSerialNumber,
+				NotBefore:        tt.fields.NotBefore,
+				NotAfter:         tt.fields.NotAfter,
 			}
 			got, got1, err := GenerateCertificate(req, tt.args.caCrt, tt.args.caKey)
 			if (err != nil) != tt.wantErr {
@@ -187,7 +206,6 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 		})
 	}
 }
-
 
 func TestCARequest_GenerateCA(t *testing.T) {
 	type fields struct {
