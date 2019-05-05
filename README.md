@@ -76,7 +76,9 @@ M6ZzVSUF1PH+Ok2Fm7EP26Yax3RkoPrgmlLqL/1fRJaJ
 
 ```
 
-By default a sqlite (ca.db) database is created to keep track of unique certificate serialnumbers. The CA database can be one of the following flavours of sql: sqlite3, mysql, postgresql or mssql. 
+By default a file (file.db) database is created to keep track of unique certificate serialnumbers. 
+This is advised only for dev and test environments. The CA database can be one of the following flavours of sql: mysql, 
+postgresql or mssql. 
 
 ## Development setup
 
