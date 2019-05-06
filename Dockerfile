@@ -8,7 +8,7 @@ RUN go mod download
 RUN go test ./...
 RUN GOOS=linux go build -a -o certificates main.go
 
-FROM alpine:latest
+FROM alpine:3.9
 RUN apk --no-cache add ca-certificates
 WORKDIR /app/
 COPY --from=builder /src/certificates .
