@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/mvmaasakkers/certificates.svg?branch=master)](https://travis-ci.com/mvmaasakkers/certificates) 
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![GoDoc](https://godoc.org/github.com/mvmaasakkers/certificates?status.svg)](https://godoc.org/github.com/mvmaasakkers/certificates)
+[![CodeFactor](https://www.codefactor.io/repository/github/mvmaasakkers/certificates/badge)](https://www.codefactor.io/repository/github/mvmaasakkers/certificates)
 [![Coverage Status](https://coveralls.io/repos/github/mvmaasakkers/certificates/badge.svg?branch=master)](https://coveralls.io/github/mvmaasakkers/certificates?branch=master)
 
 This is an opinionated helper for generating tls certificates.
@@ -98,7 +99,7 @@ USAGE:
    main [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.0.1-beta1
+   v0.0.1-beta2
 
 DESCRIPTION:
    An opinionated TLS certificate generator.
