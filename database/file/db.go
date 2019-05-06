@@ -37,11 +37,7 @@ func (db *db) readState() error {
 		return err
 	}
 
-	if err := json.Unmarshal(d, db.state); err != nil {
-		return err
-	}
-
-	return nil
+	return json.Unmarshal(d, db.state)
 }
 
 func (db *db) writeState() error {
@@ -55,9 +51,5 @@ func (db *db) writeState() error {
 		return err
 	}
 
-	if err := ioutil.WriteFile(db.filename, d, 0644); err != nil {
-		return err
-	}
-
-	return nil
+	return ioutil.WriteFile(db.filename, d, 0644)
 }

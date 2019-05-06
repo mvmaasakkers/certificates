@@ -117,11 +117,7 @@ var certificateCommand = cli.Command{
 					return err
 				}
 
-				if err := ioutil.WriteFile(c.String("ca-key"), caKey, 0600); err != nil {
-					return err
-				}
-
-				return nil
+				return ioutil.WriteFile(c.String("ca-key"), caKey, 0600)
 			},
 		},
 		{
@@ -313,11 +309,7 @@ var certificateCommand = cli.Command{
 					return err
 				}
 				fmt.Printf("Writing key to %s\n", c.String("key"))
-				if err := ioutil.WriteFile(c.String("key"), key, 0600); err != nil {
-					return err
-				}
-
-				return nil
+				return ioutil.WriteFile(c.String("key"), key, 0600)
 			},
 		},
 	},

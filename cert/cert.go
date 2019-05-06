@@ -152,6 +152,9 @@ func GenerateCertificate(req *Request, caCrt []byte, caKey []byte) ([]byte, []by
 	pub := &priv.PublicKey
 
 	certB, err := x509.CreateCertificate(rand.Reader, cert, ca, pub, catls.PrivateKey)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	pemOut := bytes.NewBuffer([]byte{})
 	if err := pem.Encode(pemOut, &pem.Block{Type: "CERTIFICATE", Bytes: certB}); err != nil {

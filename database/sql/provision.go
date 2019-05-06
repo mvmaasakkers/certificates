@@ -10,9 +10,5 @@ import (
 
 func (sqldb *sqlDB) Provision() error {
 
-	if err := sqldb.conn.AutoMigrate(&Certificate{}).Error; err != nil {
-		return err
-	}
-
-	return nil
+	return sqldb.conn.AutoMigrate(&Certificate{}).Error
 }
