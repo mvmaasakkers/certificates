@@ -100,7 +100,7 @@ USAGE:
    main [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.0.1-beta2
+   v...
 
 DESCRIPTION:
    An opinionated TLS certificate generator.
