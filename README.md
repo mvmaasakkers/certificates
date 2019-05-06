@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/mvmaasakkers/certificates.svg?branch=master)](https://travis-ci.com/mvmaasakkers/certificates) 
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![GoDoc](https://godoc.org/github.com/mvmaasakkers/certificates?status.svg)](https://godoc.org/github.com/mvmaasakkers/certificates)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mvmaasakkers/certificates)](https://goreportcard.com/report/github.com/mvmaasakkers/certificates)
 [![CodeFactor](https://www.codefactor.io/repository/github/mvmaasakkers/certificates/badge)](https://www.codefactor.io/repository/github/mvmaasakkers/certificates)
 [![Coverage Status](https://coveralls.io/repos/github/mvmaasakkers/certificates/badge.svg?branch=master)](https://coveralls.io/github/mvmaasakkers/certificates?branch=master)
 
