@@ -12,15 +12,6 @@ type CertificateRepository struct {
 	db *db
 }
 
-func (repo *CertificateRepository) List() ([]*database.Certificate, error) {
-
-	return nil, nil
-}
-
-func (repo *CertificateRepository) GetByUUID(uuid string) (*database.Certificate, error) {
-	return nil, nil
-}
-
 func (repo *CertificateRepository) GetByNameSerialNumber(nameSerialNumber string) (*database.Certificate, error) {
 	repo.db.stateLock.Lock()
 	defer repo.db.stateLock.Unlock()
@@ -48,14 +39,6 @@ func (repo *CertificateRepository) Create(certificate *database.Certificate) err
 
 	repo.db.state.Certificates[certificate.CommonName] = certificate
 	return repo.db.writeState()
-}
-
-func (repo *CertificateRepository) Update(certificate *database.Certificate) error {
-	return nil
-}
-
-func (repo *CertificateRepository) Delete(certificate *database.Certificate) error {
-	return nil
 }
 
 func (repo *CertificateRepository) DeleteByNameSerialNumber(nameSerialNumber string) error {

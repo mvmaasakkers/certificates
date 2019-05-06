@@ -15,11 +15,8 @@ type DB interface {
 }
 
 type CertificateRepository interface {
-	List() ([]*Certificate, error)
-	GetByUUID(uuid string) (*Certificate, error)
 	GetByNameSerialNumber(nameSerialNumber string) (*Certificate, error)
 	Create(certificate *Certificate) error
-	Update(certificate *Certificate) error
 	DeleteByNameSerialNumber(nameSerialNumber string) error
 }
 
