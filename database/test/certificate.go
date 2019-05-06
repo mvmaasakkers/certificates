@@ -6,27 +6,28 @@ import (
 )
 
 var certificateTests = []struct {
-	Id          string
+	ID          string
 	Error       error
 	Certificate *database.Certificate
 }{
 	{
-		Id:          "test.id",
+		ID:          "test.id",
 		Error:       nil,
 		Certificate: &database.Certificate{CommonName: "test.id", NameSerialNumber: "testserial"},
 	},
 	{
-		Id:          "testnotfound",
+		ID:          "testnotfound",
 		Error:       database.ErrorObjectNotFound,
 		Certificate: &database.Certificate{},
 	},
 }
 
-func TestCertificate_Certificate(t *testing.T, certificateRepository database.CertificateRepository) {
+// TestCertificateCertificate tests
+func TestCertificateCertificate(t *testing.T, certificateRepository database.CertificateRepository) {
 	for _, test := range certificateTests {
 		_, err := certificateRepository.GetByNameSerialNumber(test.Certificate.NameSerialNumber)
 		if err != test.Error {
-			t.Errorf("%s: expected error %+v, got error %+v", test.Id, test.Error, err)
+			t.Errorf("%s: expected error %+v, got error %+v", test.ID, test.Error, err)
 			t.Fail()
 		}
 	}
@@ -47,7 +48,8 @@ var createCertificateTests = []struct {
 	},
 }
 
-func TestCertificate_CreateCertificate(t *testing.T, certificateRepository database.CertificateRepository) {
+// TestCertificateCreateCertificate tests
+func TestCertificateCreateCertificate(t *testing.T, certificateRepository database.CertificateRepository) {
 	for _, test := range createCertificateTests {
 		err := certificateRepository.Create(test.Certificate)
 		if err != test.Error {

@@ -5,6 +5,7 @@ import (
 	"math/big"
 )
 
+// GenerateRandomBigInt generates a random big.int (decimal) needed for certificate serial numbers.
 func GenerateRandomBigInt() (*big.Int, error) {
 	var n *big.Int
 	var err error

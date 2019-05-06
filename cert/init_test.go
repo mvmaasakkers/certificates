@@ -7,13 +7,12 @@ import (
 )
 
 type testData struct {
-	Request *CertRequest
-	Crt []byte
-	Key []byte
+	Request *Request
+	Crt     []byte
+	Key     []byte
 }
 
 var testCA *testData
-
 
 func TestMain(m *testing.M) {
 	os.Exit(runTests(m))
@@ -22,7 +21,7 @@ func TestMain(m *testing.M) {
 func runTests(m *testing.M) int {
 
 	testCA = &testData{
-		Request: &CertRequest{
+		Request: &Request{
 			CommonName: "test.local",
 		},
 	}

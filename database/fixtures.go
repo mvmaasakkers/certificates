@@ -4,6 +4,7 @@ import (
 	"log"
 )
 
+// InsertFixtures inserts data needed for tests
 func InsertFixtures(db DB) {
 	cs := db.GetCertificateRepository()
 	for _, item := range fixtureCertificates {
@@ -13,6 +14,7 @@ func InsertFixtures(db DB) {
 	}
 }
 
+// ClearFixtures cleans up data needed for tests
 func ClearFixtures(db DB) {
 	cs := db.GetCertificateRepository()
 	for _, item := range fixtureCertificates {
@@ -22,13 +24,9 @@ func ClearFixtures(db DB) {
 	}
 }
 
-func GetFixtureCertificates() []*Certificate {
-	return fixtureCertificates
-}
-
 var fixtureCertificates = []*Certificate{
 	{
 		NameSerialNumber: "testserial",
-		CommonName:   "test.id",
+		CommonName:       "test.id",
 	},
 }

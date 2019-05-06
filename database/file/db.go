@@ -9,10 +9,10 @@ import (
 )
 
 type db struct {
-	filename string
-	stateLock     *sync.Mutex
-	fileLock     *sync.Mutex
-	state    *state
+	filename  string
+	stateLock *sync.Mutex
+	fileLock  *sync.Mutex
+	state     *state
 }
 
 type state struct {
@@ -20,6 +20,7 @@ type state struct {
 	Certificates map[string]*database.Certificate
 }
 
+// NewDB bootstraps a new File DB instance
 func NewDB(filename string) database.DB {
 	return &db{
 		filename: filename,

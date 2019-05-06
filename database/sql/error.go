@@ -5,6 +5,7 @@ import (
 	"github.com/mvmaasakkers/certificates/database"
 )
 
+// GetError translates gorm errors into database package errors
 func GetError(err error) error {
 	switch err {
 	case gorm.ErrRecordNotFound:

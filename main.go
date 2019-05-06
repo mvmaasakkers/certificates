@@ -36,9 +36,9 @@ var certificateCommand = cli.Command{
 	Usage:   "certificate commands",
 	Subcommands: []cli.Command{
 		{
-			Name:    "generate-ca",
-			Aliases: []string{"gen-ca"},
-			Usage:   "Generate a CA pair",
+			Name:        "generate-ca",
+			Aliases:     []string{"gen-ca"},
+			Usage:       "Generate a CA pair",
 			Description: `To generate a CA pair you need to supply at least a valid name.`,
 			Flags: []cli.Flag{
 				cli.BoolFlag{
@@ -93,7 +93,7 @@ var certificateCommand = cli.Command{
 			},
 			Action: func(c *cli.Context) error {
 
-				ca := cert.NewCertRequest()
+				ca := cert.NewRequest()
 				ca.CommonName = c.String("cn")
 				ca.Organization = c.String("org")
 				ca.Country = c.String("country")
@@ -225,7 +225,7 @@ var certificateCommand = cli.Command{
 				},
 			},
 			Action: func(c *cli.Context) error {
-				cr := cert.NewCertRequest()
+				cr := cert.NewRequest()
 				cr.CommonName = c.String("cn")
 				cr.Organization = c.String("org")
 				cr.Country = c.String("country")

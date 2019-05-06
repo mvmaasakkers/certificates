@@ -6,14 +6,15 @@ import (
 )
 
 type sqlDB struct {
-	dialect string
+	dialect          string
 	connectionString string
-	conn *gorm.DB
+	conn             *gorm.DB
 }
 
+// NewDB bootstraps a new File DB instance
 func NewDB(dialect, connectionString string) database.DB {
 	sqldb := &sqlDB{
-		dialect: dialect,
+		dialect:          dialect,
 		connectionString: connectionString,
 	}
 	return sqldb

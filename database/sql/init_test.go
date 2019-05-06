@@ -19,7 +19,7 @@ func TestMain(m *testing.M) {
 func runTests(m *testing.M) int {
 	filename := filepath.Join(os.TempDir(), "certificates_sql_test.db")
 	testDB = NewDB("sqlite3", filename)
-	if err := testDB.Open(); err != nil  {
+	if err := testDB.Open(); err != nil {
 		log.Println(err)
 		return 1
 	}

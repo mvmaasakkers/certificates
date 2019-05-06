@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// DB is the interface for database implementations
 type DB interface {
 	Open() error
 	Close() error
@@ -14,12 +15,14 @@ type DB interface {
 	GetCertificateRepository() CertificateRepository
 }
 
+// CertificateRepository is the interface for certificate repository implementations
 type CertificateRepository interface {
 	GetByNameSerialNumber(nameSerialNumber string) (*Certificate, error)
 	Create(certificate *Certificate) error
 	DeleteByNameSerialNumber(nameSerialNumber string) error
 }
 
+// Certificate is the struct for the database certificate object
 type Certificate struct {
 	Meta
 
@@ -31,6 +34,7 @@ type Certificate struct {
 	CommonName       string
 }
 
+// NewCertificate creates a new Certificate object with a generated ID and settings the CreatedAt and UpdatedAt to now
 func NewCertificate() *Certificate {
 	uid, _ := uuid.NewRandom()
 
@@ -42,6 +46,7 @@ func NewCertificate() *Certificate {
 	return c
 }
 
+// Meta is an extra set of recurring data used in database objects
 type Meta struct {
 	UUID      string `gorm:"index"`
 	CreatedAt time.Time

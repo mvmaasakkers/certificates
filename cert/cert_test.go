@@ -79,7 +79,7 @@ func TestCertRequest_Validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			req := &CertRequest{
+			req := &Request{
 				Organization:     tt.fields.Organization,
 				Country:          tt.fields.Country,
 				Province:         tt.fields.Province,
@@ -93,7 +93,7 @@ func TestCertRequest_Validate(t *testing.T) {
 				SubjectAltNames:  tt.fields.SubjectAltNames,
 			}
 			if err := req.Validate(); (err != nil) != tt.wantErr {
-				t.Errorf("CertRequest.Validate() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Request.Validate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -221,7 +221,7 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			req := &CertRequest{
+			req := &Request{
 				Organization:     tt.fields.Organization,
 				Country:          tt.fields.Country,
 				Province:         tt.fields.Province,
@@ -235,7 +235,7 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 			}
 			got, got1, err := GenerateCertificate(req, tt.args.caCrt, tt.args.caKey)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("CertRequest.GenerateCertificate() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Request.GenerateCertificate() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
@@ -244,10 +244,10 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 			}
 
 			if len(got) == 0 {
-				t.Errorf("CertRequest.GenerateCertificate() got = %v, want %v", got, tt.want)
+				t.Errorf("Request.GenerateCertificate() got = %v, want %v", got, tt.want)
 			}
 			if len(got1) == 0 {
-				t.Errorf("CertRequest.GenerateCertificate() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("Request.GenerateCertificate() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
@@ -292,7 +292,7 @@ func TestCARequest_GenerateCA(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			req := &CertRequest{
+			req := &Request{
 				Organization:  tt.fields.Organization,
 				Country:       tt.fields.Country,
 				Province:      tt.fields.Province,
@@ -371,7 +371,7 @@ func TestCARequest_Validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			req := &CertRequest{
+			req := &Request{
 				Organization:  tt.fields.Organization,
 				Country:       tt.fields.Country,
 				Province:      tt.fields.Province,

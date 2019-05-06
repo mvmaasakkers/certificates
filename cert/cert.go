@@ -12,17 +12,17 @@ import (
 	"time"
 )
 
-// CertRequest is the struct needed to generate a CA or Certificate pair
-type CertRequest struct {
-	Organization    string
-	Country         string
-	Province        string
-	Locality        string
-	StreetAddress   string
-	PostalCode      string
-	CommonName      string
+// Request is the struct needed to generate a CA or Certificate pair
+type Request struct {
+	Organization  string
+	Country       string
+	Province      string
+	Locality      string
+	StreetAddress string
+	PostalCode    string
+	CommonName    string
 
-	SerialNumber    *big.Int
+	SerialNumber     *big.Int
 	NameSerialNumber string
 
 	SubjectAltNames []string
@@ -31,20 +31,20 @@ type CertRequest struct {
 	NotAfter  time.Time
 }
 
-// NewCertRequest will create a new CertRequest struct and set the NotBefore to now and the NotAfter to one day from now
-func NewCertRequest() *CertRequest {
-	return &CertRequest{
+// NewRequest will create a new Request struct and set the NotBefore to now and the NotAfter to one day from now
+func NewRequest() *Request {
+	return &Request{
 		NotBefore: time.Now(),
 		NotAfter:  time.Now().AddDate(0, 0, 1),
 	}
 }
 
-// Validate will check the validity of the CertRequest object
+// Validate will check the validity of the Request object
 //
 // The checks are:
 // - A Common Name is mandatory
 // - If a list of SubjectAltNames is given, none of them can be empty
-func (req *CertRequest) Validate() error {
+func (req *Request) Validate() error {
 	if req.CommonName == "" {
 		return ErrorInvalidCommonName
 	}
@@ -58,9 +58,9 @@ func (req *CertRequest) Validate() error {
 	return nil
 }
 
-// GetPKIXName extracts the CertRequest object into a PKIX Name format for usage in constructing the certificate
+// GetPKIXName extracts the Request object into a PKIX Name format for usage in constructing the certificate
 // The NameSerialNumber is used as pkix.Name.SerialNumber here (if given).
-func (req *CertRequest) GetPKIXName() pkix.Name {
+func (req *Request) GetPKIXName() pkix.Name {
 	name := pkix.Name{}
 
 	if req.Organization != "" {
@@ -108,7 +108,7 @@ func (req *CertRequest) GetPKIXName() pkix.Name {
 //
 // The certificate will be signed by the given CA Certificate pair (caCrt and caKey). Validity of the CA Certificate
 // pair is checked.
-func GenerateCertificate(req *CertRequest, caCrt []byte, caKey []byte) ([]byte, []byte, error) {
+func GenerateCertificate(req *Request, caCrt []byte, caKey []byte) ([]byte, []byte, error) {
 	if err := req.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -151,10 +151,10 @@ func GenerateCertificate(req *CertRequest, caCrt []byte, caKey []byte) ([]byte, 
 	}
 	pub := &priv.PublicKey
 
-	cert_b, err := x509.CreateCertificate(rand.Reader, cert, ca, pub, catls.PrivateKey)
+	certB, err := x509.CreateCertificate(rand.Reader, cert, ca, pub, catls.PrivateKey)
 
 	pemOut := bytes.NewBuffer([]byte{})
-	if err := pem.Encode(pemOut, &pem.Block{Type: "CERTIFICATE", Bytes: cert_b}); err != nil {
+	if err := pem.Encode(pemOut, &pem.Block{Type: "CERTIFICATE", Bytes: certB}); err != nil {
 		return nil, nil, err
 	}
 
@@ -169,7 +169,7 @@ func GenerateCertificate(req *CertRequest, caCrt []byte, caKey []byte) ([]byte, 
 // GenerateCA will generate a CA certificate pair and will return certificate, key and a possible error
 // The Generated key will be in RSA format and has a bit size of 4096 and output of the Certificate
 // and Key will be returned in PEM format as bytes.
-func GenerateCA(req *CertRequest) ([]byte, []byte, error) {
+func GenerateCA(req *Request) ([]byte, []byte, error) {
 	if err := req.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -199,13 +199,13 @@ func GenerateCA(req *CertRequest) ([]byte, []byte, error) {
 		return nil, nil, err
 	}
 	pub := &priv.PublicKey
-	ca_b, err := x509.CreateCertificate(rand.Reader, ca, ca, pub, priv)
+	caB, err := x509.CreateCertificate(rand.Reader, ca, ca, pub, priv)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	crtB := bytes.NewBuffer([]byte{})
-	if err := pem.Encode(crtB, &pem.Block{Type: "CERTIFICATE", Bytes: ca_b}); err != nil {
+	if err := pem.Encode(crtB, &pem.Block{Type: "CERTIFICATE", Bytes: caB}); err != nil {
 		return nil, nil, err
 	}
 
