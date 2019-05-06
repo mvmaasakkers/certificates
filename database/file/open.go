@@ -15,9 +15,5 @@ func (db *db) Open() error {
 		}
 	}
 
-	if err := db.readState(); err != nil {
-		return err
-	}
-
-	return nil
+	return db.readState()
 }
