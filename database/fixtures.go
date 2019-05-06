@@ -11,7 +11,6 @@ func InsertFixtures(db DB) {
 			log.Printf("certificate write error %+v\n", err)
 		}
 	}
-
 }
 
 func ClearFixtures(db DB) {

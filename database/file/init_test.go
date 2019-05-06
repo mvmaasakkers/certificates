@@ -29,6 +29,7 @@ func runTests(m *testing.M) int {
 	database.InsertFixtures(testDB)
 
 	defer database.ClearFixtures(testDB)
+	defer os.Remove("file.db")
 
 	return m.Run()
 }

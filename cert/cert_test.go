@@ -172,6 +172,52 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 			want1:   nil,
 			wantErr: true,
 		},
+		{
+			name: "valid_certificate",
+			fields: fields{
+				Organization:     "",
+				Country:          "",
+				Province:         "",
+				Locality:         "",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "valid.test.local",
+				NameSerialNumber: "",
+				SubjectAltNames:  []string{},
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
+			},
+			args: args{
+				caCrt: testCA.Crt,
+				caKey: testCA.Key,
+			},
+			want:    nil,
+			want1:   nil,
+			wantErr: false,
+		},
+		{
+			name: "invalid_ca_key",
+			fields: fields{
+				Organization:     "",
+				Country:          "",
+				Province:         "",
+				Locality:         "",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "valid.test.local",
+				NameSerialNumber: "",
+				SubjectAltNames:  []string{},
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
+			},
+			args: args{
+				caCrt: testCA.Crt,
+				caKey: []byte("invalid_key"),
+			},
+			want:    nil,
+			want1:   nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
