@@ -33,7 +33,7 @@ func runTests(m *testing.M) int {
 
 	test.InsertFixtures(testDB)
 
-	defer database.ClearFixtures(testDB)
+	defer test.ClearFixtures(testDB)
 
 	return m.Run()
 }

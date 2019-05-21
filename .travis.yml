@@ -15,5 +15,5 @@ script:
   - goveralls -coverprofile=coverage.out -service travis-ci -repotoken $COVERALLS_TOKEN
 
 after_success:
-  - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
+  - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}" -osarch="linux/amd64" -osarch="darwin/amd64" -osarch="windows/amd64" -osarch="linux/386" -osarch="darwin/386" -osarch="windows/386"
   - ghr --username mvmaasakkers --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
