@@ -1,7 +1,10 @@
 package cert
 
 import (
+	"crypto/x509/pkix"
+	"fmt"
 	"math/big"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -386,6 +389,118 @@ func TestCARequest_Validate(t *testing.T) {
 				t.Errorf("CARequest.Validate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
+		})
+	}
+}
+
+func TestNewRequest(t *testing.T) {
+	now := time.Now()
+	if got := NewRequest(); (got.NotBefore.Before(now) || got.NotBefore.Equal(now)) && got.NotAfter.After(now) {
+		fmt.Println(got.NotBefore, got.NotAfter, time.Now())
+		t.Error("NewRequest() = empty times")
+	}
+}
+
+func TestRequest_GetPKIXName(t *testing.T) {
+	type fields struct {
+		Organization     string
+		Country          string
+		Province         string
+		Locality         string
+		StreetAddress    string
+		PostalCode       string
+		CommonName       string
+		SerialNumber     *big.Int
+		NameSerialNumber string
+		SubjectAltNames  []string
+		NotBefore        time.Time
+		NotAfter         time.Time
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   pkix.Name
+	}{
+		{
+			name: "first",
+			fields: fields{
+				Organization:     "",
+				Country:          "",
+				Province:         "",
+				Locality:         "",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "",
+				SerialNumber:     &big.Int{},
+				NameSerialNumber: "",
+				SubjectAltNames:  nil,
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
+			},
+			want: pkix.Name{
+				Country:            nil,
+				Organization:       nil,
+				OrganizationalUnit: nil,
+				Locality:           nil,
+				Province:           nil,
+				StreetAddress:      nil,
+				PostalCode:         nil,
+				SerialNumber:       "",
+				CommonName:         "",
+				Names:              nil,
+				ExtraNames:         nil,
+			},
+		},
+		{
+			name: "filled",
+			fields: fields{
+				Organization:     "Org",
+				Country:          "NLD",
+				Province:         "Zuid-Holland",
+				Locality:         "Rotterdam",
+				StreetAddress:    "Street",
+				PostalCode:       "1234AB",
+				CommonName:       "common.name",
+				SerialNumber:     &big.Int{},
+				NameSerialNumber: "abc1234cba",
+				SubjectAltNames:  nil,
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
+			},
+			want: pkix.Name{
+				Country:            []string{"NLD"},
+				Organization:       []string{"Org"},
+				OrganizationalUnit: nil,
+				Locality:           []string{"Rotterdam"},
+				Province:           []string{"Zuid-Holland"},
+				StreetAddress:      []string{"Street"},
+				PostalCode:         []string{"1234AB"},
+				SerialNumber:       "abc1234cba",
+				CommonName:         "common.name",
+				Names:              nil,
+				ExtraNames:         nil,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := &Request{
+				Organization:     tt.fields.Organization,
+				Country:          tt.fields.Country,
+				Province:         tt.fields.Province,
+				Locality:         tt.fields.Locality,
+				StreetAddress:    tt.fields.StreetAddress,
+				PostalCode:       tt.fields.PostalCode,
+				CommonName:       tt.fields.CommonName,
+				SerialNumber:     tt.fields.SerialNumber,
+				NameSerialNumber: tt.fields.NameSerialNumber,
+				SubjectAltNames:  tt.fields.SubjectAltNames,
+				NotBefore:        tt.fields.NotBefore,
+				NotAfter:         tt.fields.NotAfter,
+			}
+			if got := req.GetPKIXName(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Request.GetPKIXName() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
