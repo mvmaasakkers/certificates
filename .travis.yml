@@ -20,5 +20,6 @@ before_deploy:
 deploy:
   provider: script
   script: ghr --username mvmaasakkers --token $GITHUB_TOKEN --replace --prerelease $(git tag -l --contains HEAD) dist/
+  skip_cleanup: true
   on:
     tags: true
