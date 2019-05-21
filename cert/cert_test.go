@@ -186,7 +186,7 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 				PostalCode:       "",
 				CommonName:       "valid.test.local",
 				NameSerialNumber: "",
-				SubjectAltNames:  []string{},
+				SubjectAltNames:  []string{"valid.subject.alt.name"},
 				NotBefore:        time.Time{},
 				NotAfter:         time.Time{},
 			},
@@ -233,6 +233,7 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 				PostalCode:       tt.fields.PostalCode,
 				CommonName:       tt.fields.CommonName,
 				NameSerialNumber: tt.fields.NameSerialNumber,
+				SubjectAltNames:  tt.fields.SubjectAltNames,
 				NotBefore:        tt.fields.NotBefore,
 				NotAfter:         tt.fields.NotAfter,
 			}
