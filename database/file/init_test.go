@@ -3,6 +3,7 @@ package file
 import (
 	"fmt"
 	"github.com/mvmaasakkers/certificates/database"
+	"github.com/mvmaasakkers/certificates/database/test"
 	"os"
 	"testing"
 )
@@ -26,7 +27,7 @@ func runTests(m *testing.M) int {
 		return 1
 	}
 
-	database.InsertFixtures(testDB)
+	test.InsertFixtures(testDB)
 
 	defer database.ClearFixtures(testDB)
 	defer os.Remove("file.db")

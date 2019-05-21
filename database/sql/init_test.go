@@ -2,6 +2,7 @@ package sql
 
 import (
 	"github.com/mvmaasakkers/certificates/database"
+	"github.com/mvmaasakkers/certificates/database/test"
 	"log"
 	"os"
 	"path/filepath"
@@ -30,7 +31,7 @@ func runTests(m *testing.M) int {
 		return 1
 	}
 
-	database.InsertFixtures(testDB)
+	test.InsertFixtures(testDB)
 
 	defer database.ClearFixtures(testDB)
 
