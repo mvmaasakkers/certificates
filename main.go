@@ -16,6 +16,17 @@ import (
 )
 
 func main() {
+	err := run(os.Args)
+	if err != nil {
+		os.Exit(1)
+	}
+}
+
+func run(args []string) error {
+	if args == nil {
+		args = os.Args[0:1]
+	}
+
 	app := cli.NewApp()
 	app.Name = "certificates"
 	app.Usage = "An opinionated TLS certificate generator."
@@ -25,10 +36,7 @@ func main() {
 		certificateCommand,
 	}
 
-	err := app.Run(os.Args)
-	if err != nil {
-		fmt.Println(err)
-	}
+	return app.Run(args)
 }
 
 var certificateCommand = cli.Command{

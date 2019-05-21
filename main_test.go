@@ -1,18 +1,41 @@
 package main
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
-func Test_main(t *testing.T) {
+func Test_run(t *testing.T) {
+	type args struct {
+		args []string
+	}
 	tests := []struct {
-		name string
+		name    string
+		args    args
+		wantErr bool
 	}{
 		{
-			name: "test_main_just_running",
+			name: "invalid-ca",
+			args: args{
+				args: []string{"cert", "gen-ca"},
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid-crt",
+			args: args{
+				args: []string{"cert", "gen"},
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			main()
+			args := os.Args[0:1]
+			args = append(args, tt.args.args...)
+			if err := run(args); (err != nil) != tt.wantErr {
+				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
+			}
 		})
 	}
 }
