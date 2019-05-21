@@ -7,11 +7,12 @@ import (
 	"github.com/mvmaasakkers/certificates/database"
 	"github.com/mvmaasakkers/certificates/database/file"
 	"github.com/mvmaasakkers/certificates/database/sql"
+	"github.com/tkuchiki/parsetime"
 	"gopkg.in/urfave/cli.v1"
 	"io/ioutil"
-	"log"
 	"math/big"
 	"os"
+	"time"
 )
 
 func main() {
@@ -26,7 +27,7 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 }
 
@@ -90,6 +91,21 @@ var certificateCommand = cli.Command{
 					Value: "",
 					Usage: "StreetAddress",
 				},
+				cli.StringFlag{
+					Name:  "notbefore",
+					Value: time.Now().String(),
+					Usage: "NotBefore sets the NotBefore timestamp of the certificate request",
+				},
+				cli.StringFlag{
+					Name:  "notafter",
+					Value: time.Now().AddDate(0, 0, 30).String(),
+					Usage: "NotAfter sets the NotAfter timestamp of the certificate request. The default is 30 days from now.",
+				},
+				cli.StringFlag{
+					Name:  "timezone",
+					Value: "UTC",
+					Usage: "Timezone to use. Default is set to UTC.",
+				},
 			},
 			Action: func(c *cli.Context) error {
 
@@ -101,6 +117,27 @@ var certificateCommand = cli.Command{
 				ca.Locality = c.String("locality")
 				ca.PostalCode = c.String("postalcode")
 				ca.StreetAddress = c.String("streetaddress")
+
+				p, err := parsetime.NewParseTime(c.String("timezone"))
+				if err != nil {
+					return err
+				}
+
+				if c.String("notbefore") != "" {
+					notBefore, err := p.Parse(c.String("notbefore"))
+					if err != nil {
+						return err
+					}
+					ca.NotBefore = notBefore
+				}
+
+				if c.String("notafter") != "" {
+					notAfter, err := p.Parse(c.String("notafter"))
+					if err != nil {
+						return err
+					}
+					ca.NotAfter = notAfter
+				}
 
 				caCrt, caKey, err := cert.GenerateCA(ca)
 				if err != nil {
@@ -219,6 +256,21 @@ var certificateCommand = cli.Command{
 					Name:  "subject-alt-name",
 					Usage: "Subject Alt Name",
 				},
+				cli.StringFlag{
+					Name:  "notbefore",
+					Value: time.Now().String(),
+					Usage: "NotBefore sets the NotBefore timestamp of the certificate request",
+				},
+				cli.StringFlag{
+					Name:  "notafter",
+					Value: time.Now().AddDate(0, 0, 30).String(),
+					Usage: "NotAfter sets the NotAfter timestamp of the certificate request. The default is 30 days from now.",
+				},
+				cli.StringFlag{
+					Name:  "timezone",
+					Value: "UTC",
+					Usage: "Timezone",
+				},
 			},
 			Action: func(c *cli.Context) error {
 				cr := cert.NewRequest()
@@ -246,6 +298,27 @@ var certificateCommand = cli.Command{
 					cr.SerialNumber = big.NewInt(c.Int64("serialnumber"))
 				} else {
 					cr.SerialNumber, _ = cert.GenerateRandomBigInt()
+				}
+
+				p, err := parsetime.NewParseTime(c.String("timezone"))
+				if err != nil {
+					return err
+				}
+
+				if c.String("notbefore") != "" {
+					notBefore, err := p.Parse(c.String("notbefore"))
+					if err != nil {
+						return err
+					}
+					cr.NotBefore = notBefore
+				}
+
+				if c.String("notafter") != "" {
+					notAfter, err := p.Parse(c.String("notafter"))
+					if err != nil {
+						return err
+					}
+					cr.NotAfter = notAfter
 				}
 
 				caCrt, err := ioutil.ReadFile(c.String("ca"))
