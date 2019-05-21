@@ -16,4 +16,9 @@ script:
 
 after_success:
   - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}" -osarch="linux/amd64" -osarch="darwin/amd64" -osarch="windows/amd64" -osarch="linux/386" -osarch="darwin/386" -osarch="windows/386"
-  - ghr --username mvmaasakkers --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
+
+deploy:
+  provider: script
+  script: ghr --username mvmaasakkers --token $GITHUB_TOKEN --replace --prerelease $(git tag -l --contains HEAD) dist/
+  on:
+    tags: true
