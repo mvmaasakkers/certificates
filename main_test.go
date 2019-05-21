@@ -6,6 +6,12 @@ import (
 )
 
 func Test_run(t *testing.T) {
+	// Clean up files first
+	os.Remove("ca.crt")
+	os.Remove("ca.key")
+	os.Remove("file.db")
+
+
 	type args struct {
 		args []string
 	}
@@ -14,6 +20,13 @@ func Test_run(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
+		{
+			name: "empty-args",
+			args: args{
+				args: nil,
+			},
+			wantErr: false,
+		},
 		{
 			name: "invalid-ca",
 			args: args{
@@ -27,6 +40,48 @@ func Test_run(t *testing.T) {
 				args: []string{"cert", "gen"},
 			},
 			wantErr: true,
+		},
+		{
+			name: "valid-ca",
+			args: args{
+				args: []string{"cert", "gen-ca", "--cn=common.test.name"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "valid-ca-stdout",
+			args: args{
+				args: []string{"cert", "gen-ca", "--cn=common.test.name", "--stdout"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "valid-crt",
+			args: args{
+				args: []string{"cert", "gen", "--cn=common.test.name"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "valid-crt",
+			args: args{
+				args: []string{"cert", "gen", "--cn=common.test.name.stdout", "--stdout"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "valid-crt-duplicate",
+			args: args{
+				args: []string{"cert", "gen", "--cn=common.test.name", "--stdout"},
+			},
+			wantErr: true,
+		},
+		{
+			name: "valid-crt-expiration-dates",
+			args: args{
+				args: []string{"cert", "gen", "--cn=common.test.name.two", "--stdout", "--notbefore=2019-01-01", "--notafter=2019-10-20"},
+			},
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
