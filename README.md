@@ -6,6 +6,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/mvmaasakkers/certificates)](https://goreportcard.com/report/github.com/mvmaasakkers/certificates)
 [![CodeFactor](https://www.codefactor.io/repository/github/mvmaasakkers/certificates/badge)](https://www.codefactor.io/repository/github/mvmaasakkers/certificates)
 [![Coverage Status](https://coveralls.io/repos/github/mvmaasakkers/certificates/badge.svg?branch=master)](https://coveralls.io/github/mvmaasakkers/certificates?branch=master)
+[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)  
+
 
 This is an opinionated helper for generating tls certificates.
 It outputs only in PEM format but this enables you easily generate certificate
