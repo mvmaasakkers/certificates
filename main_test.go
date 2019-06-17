@@ -11,7 +11,6 @@ func Test_run(t *testing.T) {
 	os.Remove("ca.key")
 	os.Remove("file.db")
 
-
 	type args struct {
 		args []string
 	}
@@ -56,6 +55,13 @@ func Test_run(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "invalid-ca-timezone",
+			args: args{
+				args: []string{"cert", "gen-ca", "--cn=common.test.name", "--stdout", "--notbefore=2019-01-01", "--notafter=2019-10-20", "--timezone=ASISJDOI.JAOSIJD"},
+			},
+			wantErr: true,
+		},
+		{
 			name: "valid-crt",
 			args: args{
 				args: []string{"cert", "gen", "--cn=common.test.name"},
@@ -83,6 +89,27 @@ func Test_run(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "invalid-timezone",
+			args: args{
+				args: []string{"cert", "gen", "--cn=common.test.name.two", "--stdout", "--notbefore=2019-01-01", "--notafter=2019-10-20", "--timezone=ASISJDOI.JAOSIJD"},
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid-notbefore",
+			args: args{
+				args: []string{"cert", "gen", "--cn=common.test.name.two", "--stdout", "--notbefore=invalid", "--notafter=2019-10-20"},
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid-notafter",
+			args: args{
+				args: []string{"cert", "gen", "--cn=common.test.name.two", "--stdout", "--notbefore=2019-01-01", "--notafter=invalid"},
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -92,5 +119,9 @@ func Test_run(t *testing.T) {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
+	}
+
+	if err := run(nil); (err != nil) != false {
+		t.Errorf("run() error = %v, wantErr %v", err, false)
 	}
 }
