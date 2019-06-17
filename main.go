@@ -30,7 +30,7 @@ func run(args []string) error {
 	app := cli.NewApp()
 	app.Name = "certificates"
 	app.Usage = "An opinionated TLS certificate generator."
-	app.Version = "v0.3.3"
+	app.Version = "v0.4.0"
 	app.Description = "An opinionated TLS certificate generator."
 	app.Commands = []cli.Command{
 		certificateCommand,
@@ -128,12 +128,14 @@ var certificateCommand = cli.Command{
 
 				p, err := parsetime.NewParseTime(c.String("timezone"))
 				if err != nil {
+					fmt.Printf("Error parsing --timezone: %s\n", err.Error())
 					return err
 				}
 
 				if c.String("notbefore") != "" {
 					notBefore, err := p.Parse(c.String("notbefore"))
 					if err != nil {
+						fmt.Printf("Error parsing --notbefore: %s\n", err.Error())
 						return err
 					}
 					ca.NotBefore = notBefore
@@ -142,6 +144,7 @@ var certificateCommand = cli.Command{
 				if c.String("notafter") != "" {
 					notAfter, err := p.Parse(c.String("notafter"))
 					if err != nil {
+						fmt.Printf("Error parsing --notafter: %s\n", err.Error())
 						return err
 					}
 					ca.NotAfter = notAfter
@@ -149,6 +152,7 @@ var certificateCommand = cli.Command{
 
 				caCrt, caKey, err := cert.GenerateCA(ca)
 				if err != nil {
+					fmt.Printf("Error generating CA: %s\n", err.Error())
 					return err
 				}
 
@@ -159,10 +163,16 @@ var certificateCommand = cli.Command{
 				}
 
 				if err := ioutil.WriteFile(c.String("ca"), caCrt, 0600); err != nil {
+					fmt.Printf("Error writing CA: %s\n", err.Error())
 					return err
 				}
 
-				return ioutil.WriteFile(c.String("ca-key"), caKey, 0600)
+				if err := ioutil.WriteFile(c.String("ca-key"), caKey, 0600); err != nil {
+					fmt.Printf("Error writing CA: %s\n", err.Error())
+					return err
+				}
+
+				return nil
 			},
 		},
 		{
@@ -185,23 +195,23 @@ var certificateCommand = cli.Command{
 					Usage: "CA Key file",
 				},
 				cli.StringFlag{
-					Name:  "ca-db-type",
+					Name:  "ca-DB-type",
 					Value: "file",
 					Usage: "CA DB type (file)",
 				},
 
 				cli.StringFlag{
-					Name:  "ca-db-file",
-					Value: "file.db",
+					Name:  "ca-DB-file",
+					Value: "file.DB",
 					Usage: "File DB filename",
 				},
 				cli.StringFlag{
-					Name:  "ca-db-sql-dialect",
+					Name:  "ca-DB-sql-dialect",
 					Value: "mysql",
 					Usage: "SQL Dialect",
 				},
 				cli.StringFlag{
-					Name:  "ca-db-sql-cs",
+					Name:  "ca-DB-sql-cs",
 					Value: "user:pass@tcp(localhost:3306)/test?charset=utf8&parseTime=True",
 					Usage: "SQL Connection String",
 				},
@@ -297,6 +307,7 @@ var certificateCommand = cli.Command{
 					// Generating serial number
 					sn, err := uuid.NewRandom()
 					if err != nil {
+						fmt.Printf("Error generating serial number: %s\n", err.Error())
 						return err
 					}
 					cr.NameSerialNumber = sn.String()
@@ -310,12 +321,14 @@ var certificateCommand = cli.Command{
 
 				p, err := parsetime.NewParseTime(c.String("timezone"))
 				if err != nil {
+					fmt.Printf("Error parsing --timezone: %s\n", err.Error())
 					return err
 				}
 
 				if c.String("notbefore") != "" {
 					notBefore, err := p.Parse(c.String("notbefore"))
 					if err != nil {
+						fmt.Printf("Error parsing --notbefore: %s\n", err.Error())
 						return err
 					}
 					cr.NotBefore = notBefore
@@ -324,6 +337,7 @@ var certificateCommand = cli.Command{
 				if c.String("notafter") != "" {
 					notAfter, err := p.Parse(c.String("notafter"))
 					if err != nil {
+						fmt.Printf("Error parsing --notafter: %s\n", err.Error())
 						return err
 					}
 					cr.NotAfter = notAfter
@@ -331,50 +345,56 @@ var certificateCommand = cli.Command{
 
 				caCrt, err := ioutil.ReadFile(c.String("ca"))
 				if err != nil {
+					fmt.Printf("Error reading CA certificate: %s\n", err.Error())
 					return err
 				}
 				caKey, err := ioutil.ReadFile(c.String("ca-key"))
 				if err != nil {
+					fmt.Printf("Error reading CA key: %s\n", err.Error())
 					return err
 				}
 
 				// DB
-				var db database.DB
-				switch c.String("ca-db-type") {
+				var DB database.DB
+				switch c.String("ca-DB-type") {
 				case "sql":
-					db = sql.NewDB(c.String("ca-db-sql-dialect"), c.String("ca-db-sql-cs"))
+					DB = sql.NewDB(c.String("ca-DB-sql-dialect"), c.String("ca-DB-sql-cs"))
 				case "file":
-					db = file.NewDB(c.String("ca-db-file"))
+					DB = file.NewDB(c.String("ca-DB-file"))
 				}
 
-				if db == nil {
+				if DB == nil {
 					return database.ErrorNilConnection
 				}
 
-				if err := db.Open(); err != nil {
+				if err := DB.Open(); err != nil {
+					fmt.Printf("Error opening DB: %s\n", err.Error())
 					return err
 				}
-				defer db.Close()
+				defer DB.Close()
 
-				if err := db.Provision(); err != nil {
+				if err := DB.Provision(); err != nil {
+					fmt.Printf("Error provisioning DB: %s\n", err.Error())
 					return err
 				}
 
 				crt, key, err := cert.GenerateCertificate(cr, caCrt, caKey)
 				if err != nil {
+					fmt.Printf("Error generating certificate: %s\n", err.Error())
 					return err
 				}
 
 				// Store in CA DB
-				dbCert := database.NewCertificate()
-				dbCert.Status = "valid"
-				dbCert.ExpirationDate = cr.NotAfter
-				dbCert.RevocationDate = nil
-				dbCert.SerialNumber = cr.SerialNumber
-				dbCert.NameSerialNumber = cr.NameSerialNumber
-				dbCert.CommonName = cr.CommonName
+				DBCert := database.NewCertificate()
+				DBCert.Status = "valid"
+				DBCert.ExpirationDate = cr.NotAfter
+				DBCert.RevocationDate = nil
+				DBCert.SerialNumber = cr.SerialNumber
+				DBCert.NameSerialNumber = cr.NameSerialNumber
+				DBCert.CommonName = cr.CommonName
 
-				if err := db.GetCertificateRepository().Create(dbCert); err != nil {
+				if err := DB.GetCertificateRepository().Create(DBCert); err != nil {
+					fmt.Printf("Error saving certificate to DB: %s\n", err.Error())
 					return err
 				}
 
@@ -387,10 +407,15 @@ var certificateCommand = cli.Command{
 				fmt.Printf("Generated certificate with serial number %s\n", cr.SerialNumber)
 				fmt.Printf("Writing certificate to %s\n", c.String("crt"))
 				if err := ioutil.WriteFile(c.String("crt"), crt, 0600); err != nil {
+					fmt.Printf("Error writing certificate to file: %s\n", err.Error())
 					return err
 				}
 				fmt.Printf("Writing key to %s\n", c.String("key"))
-				return ioutil.WriteFile(c.String("key"), key, 0600)
+				if err := ioutil.WriteFile(c.String("key"), key, 0600); err != nil {
+					fmt.Printf("Error writing certificate key to file: %s\n", err.Error())
+					return err
+				}
+				return nil
 			},
 		},
 	},
