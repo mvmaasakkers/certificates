@@ -116,6 +116,7 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 		SubjectAltNames  []string
 		NotBefore        time.Time
 		NotAfter         time.Time
+		BitSize          int
 	}
 	type args struct {
 		caCrt []byte
@@ -199,6 +200,54 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "valid_certificate_2048",
+			fields: fields{
+				Organization:     "",
+				Country:          "",
+				Province:         "",
+				Locality:         "",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "valid.test.local",
+				NameSerialNumber: "",
+				SubjectAltNames:  []string{"valid.subject.alt.name"},
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
+				BitSize:          2048,
+			},
+			args: args{
+				caCrt: testCA.Crt,
+				caKey: testCA.Key,
+			},
+			want:    nil,
+			want1:   nil,
+			wantErr: false,
+		},
+		{
+			name: "valid_certificate_invalid_bitsize",
+			fields: fields{
+				Organization:     "",
+				Country:          "",
+				Province:         "",
+				Locality:         "",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "valid.test.local",
+				NameSerialNumber: "",
+				SubjectAltNames:  []string{"valid.subject.alt.name"},
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
+				BitSize:          1234,
+			},
+			args: args{
+				caCrt: testCA.Crt,
+				caKey: testCA.Key,
+			},
+			want:    nil,
+			want1:   nil,
+			wantErr: true,
+		},
+		{
 			name: "invalid_ca_key",
 			fields: fields{
 				Organization:     "",
@@ -236,6 +285,7 @@ func TestCertRequest_GenerateCertificate(t *testing.T) {
 				SubjectAltNames:  tt.fields.SubjectAltNames,
 				NotBefore:        tt.fields.NotBefore,
 				NotAfter:         tt.fields.NotAfter,
+				BitSize:          tt.fields.BitSize,
 			}
 			got, got1, err := GenerateCertificate(req, tt.args.caCrt, tt.args.caKey)
 			if (err != nil) != tt.wantErr {
