@@ -85,6 +85,8 @@ By default a file (file.db) database is created to keep track of unique certific
 This is advised only for dev and test environments. The CA database can be one of the following flavours of sql: mysql, 
 postgresql or mssql. 
 
+To change key generation bitsize use the `--bitsize` flag (default is 4096, options are 2048 and 4096).
+
 ## Development setup
 
 This module uses [Go modules](https://github.com/golang/go/wiki/Modules) for dependency management.

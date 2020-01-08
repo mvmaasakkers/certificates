@@ -29,7 +29,7 @@ func run(args []string) error {
 	app := cli.NewApp()
 	app.Name = "certificates"
 	app.Usage = "An opinionated TLS certificate generator."
-	app.Version = "v0.4.1"
+	app.Version = "v0.5.0"
 	app.Description = "An opinionated TLS certificate generator."
 	app.Commands = []cli.Command{
 		certificateCommand,
@@ -288,6 +288,11 @@ var certificateCommand = cli.Command{
 					Value: "UTC",
 					Usage: "Timezone",
 				},
+				cli.IntFlag{
+					Name:  "bitsize",
+					Value: 4096,
+					Usage: "Encryption key bitsize",
+				},
 			},
 			Action: func(c *cli.Context) error {
 				cr := cert.NewRequest()
@@ -299,6 +304,7 @@ var certificateCommand = cli.Command{
 				cr.PostalCode = c.String("postalcode")
 				cr.StreetAddress = c.String("streetaddress")
 				cr.NameSerialNumber = c.String("name-serialnumber")
+				cr.BitSize = c.Int("bitsize")
 
 				cr.SubjectAltNames = c.StringSlice("subject-alt-name")
 

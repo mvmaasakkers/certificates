@@ -29,6 +29,22 @@ type Request struct {
 
 	NotBefore time.Time
 	NotAfter  time.Time
+
+	BitSize int
+}
+
+const defaultBitSize = 4096
+
+var bitSizeOptions = []int{2048, 4096}
+
+func isValidBitSizeOption(option int) bool {
+	for _, v := range bitSizeOptions {
+		if v == option {
+			return true
+		}
+	}
+
+	return false
 }
 
 // NewRequest will create a new Request struct and set the NotBefore to now and the NotAfter to one day from now
@@ -36,6 +52,7 @@ func NewRequest() *Request {
 	return &Request{
 		NotBefore: time.Now(),
 		NotAfter:  time.Now().AddDate(0, 0, 1),
+		BitSize:   defaultBitSize,
 	}
 }
 
@@ -47,6 +64,14 @@ func NewRequest() *Request {
 func (req *Request) Validate() error {
 	if req.CommonName == "" {
 		return ErrorInvalidCommonName
+	}
+
+	if req.BitSize == 0 {
+		req.BitSize = defaultBitSize
+	}
+
+	if !isValidBitSizeOption(req.BitSize) {
+		return ErrorInvalidBitSize
 	}
 
 	for _, n := range req.SubjectAltNames {
@@ -145,7 +170,7 @@ func GenerateCertificate(req *Request, caCrt []byte, caKey []byte) ([]byte, []by
 		cert.DNSNames = req.SubjectAltNames
 	}
 
-	priv, err := rsa.GenerateKey(rand.Reader, 4069)
+	priv, err := rsa.GenerateKey(rand.Reader, req.BitSize)
 	if err != nil {
 		return nil, nil, err
 	}
