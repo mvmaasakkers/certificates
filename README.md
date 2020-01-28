@@ -1,6 +1,7 @@
 # Certificates helper 
 
-[![Build Status](https://travis-ci.com/mvmaasakkers/certificates.svg?branch=master)](https://travis-ci.com/mvmaasakkers/certificates) 
+[![Build Status](https://travis-ci.com/mvmaasakkers/certificates.svg?branch=master)](https://travis-ci.com/mvmaasakkers/certificates) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmvmaasakkers%2Fcertificates.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmvmaasakkers%2Fcertificates?ref=badge_shield)
+
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![GoDoc](https://godoc.org/github.com/mvmaasakkers/certificates?status.svg)](https://godoc.org/github.com/mvmaasakkers/certificates)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mvmaasakkers/certificates)](https://goreportcard.com/report/github.com/mvmaasakkers/certificates)
@@ -117,3 +118,6 @@ GLOBAL OPTIONS:
    --help, -h     show help
    --version, -v  print the version
 ```
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmvmaasakkers%2Fcertificates.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmvmaasakkers%2Fcertificates?ref=badge_large)
