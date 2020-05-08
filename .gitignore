@@ -1,2 +1,5 @@
 .idea
 vendor
+*.crt
+*.key
+*.DB
