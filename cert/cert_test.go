@@ -555,3 +555,117 @@ func TestRequest_GetPKIXName(t *testing.T) {
 		})
 	}
 }
+
+// testCSRFile is a CSR with the following data:
+// Country = NL
+// State = Zuid-Holland
+// Locality = Delft
+// Organization = TJIP B.V.
+// Organizational Unit = Services
+// Common Name = test.tjip.com
+var testCSRFile = []byte(`-----BEGIN CERTIFICATE REQUEST-----
+MIIEuDCCAqACAQAwczELMAkGA1UEBhMCTkwxFjAUBgNVBAMMDXRlc3QudGppcC5j
+b20xDjAMBgNVBAcMBURlbGZ0MRIwEAYDVQQKDAlUSklQIEIuVi4xFTATBgNVBAgM
+DFp1aWQtSG9sbGFuZDERMA8GA1UECwwIU2VydmljZXMwggIiMA0GCSqGSIb3DQEB
+AQUAA4ICDwAwggIKAoICAQC0q0wGCxUtfCxQoW7lRocuDIkVsJfXbjGGD5W7gx8q
+Bl5ESWpmlBpIXpoK4hZthTq9owubS0aCqZXtYfNPw1AoBttd5Rdd36e6euR8jzAT
+raE7WPJR6xYkOp+hnDexv/J1FMAID7JX/RoPPH9CyxckrH9kDdDW3VBjL5NXlUng
+y3EF/NVxkl+R7N8+NIXH2qrD288VJ/haCTQ/w+LNEbu+u1OPLK58+fAyVgKNg+tX
+KF8ZgiritoVARHPH+1wtiu9DEAAx5XO8XMa2rxq1hRf4zLBfwaTYS2bOpFPOe12Z
+av1uiBPxA7fCR+FzRwxstpSlTuiXhiCWsd4lJiuj0cUQ3bjnSL8EzZKcKRZOd7Ox
+bNJaC3jp/H0trq8Woe8bQ1+7JKCtBW5aNWvBx8OhYvxqrK1n+CheEhDPi0mJ5+dI
+8PIwZxlRFBG8pE7Rh8PTSr+tZpVVP4Ri6gGHpbice4M3pZgJn6QVIpBh6/YHCcje
+bEmCX4mdvbZihIKUvKfbMPJ5Xr3wFSe9q961mlNhXXM8l/dhc2kuGWwZNctqHhB/
+Jxzh1B48khC6mSCCODQYOx41cvOyc/INrN5MfU3Ow7IeD2bAIU3DvLrnPo+YPQ0f
+V8VaOeQ8+Pp5LnJh0agSquzDWc682KE4j92Ofr5kg0TTjh8jGMr49Ns2SOisiQSp
++QIDAQABoAAwDQYJKoZIhvcNAQELBQADggIBAGBT9xZfvqJzzGMQOvnvFz/Pvp1w
+/XGcgavX8X+VV8tCxRsd2Hww3rcKWxVV9U58XjMRfYwhbeYMjeENFyxcf4li0rVx
+ApDiFXq+EH2FD6lDQqkUXJlcgdNAb8x38ZLDjxdySxxVVYCPJZgTTEjBmAF3lXBa
+gxl10Y78vXhw2vENp/XnHpBvsNIvgM9rCOXBMJyhVKHgIEw5+EBeooMPJqe6plpp
+B6yHLSTyTM/jTHCUtR6zmA3lud49AoV4ggxq/vgd25rgbUKR4XUeTWpr0jgqakcg
+5FoiFn2WmfWeijaij8wkRRJlDL4qPzuwwQPE/PEWrHz5Rbcha25UDt3hQz2mXkkD
+N6UgPUO2dLdeIsiTLDnH3KGPFue1ZhpcpBAqdOSu53562Kmtt0GZYqipWt1t5yxX
+etntLyU1PZXXWjrGkXkeWb57IQfL3OISg60+D97Zm5djjEyIT25L+NVSS1DgmwPW
+hO9tp0U8CH/qZGUV/6ZcPdc6eXrLi/lNFyIsDQqanlrZ0O2bP8H+wA1BXYJE/qSY
+VM1lf2rut3Spf6wJkRaAF6NpU/wT29u8sEzPQvpxf9MJDxIV4tgJfhRiPPi7UGVx
+jpH3iRih2Wwo7BcgsM899RZI7D0HpDzlGDA8nc+jDIsMnTvmOpZFqfi3O9bGdlej
+uj+q3EZtulOe5yJk
+-----END CERTIFICATE REQUEST-----`)
+
+func TestReadCSR(t *testing.T) {
+	type args struct {
+		csrFile []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Request
+		wantErr bool
+	}{
+		{
+			name:    "working_csr",
+			args:    args{
+				csrFile: testCSRFile,
+			},
+			want: &Request{
+				Organization:     "TJIP B.V.",
+				Country:          "NL",
+				Province:         "Zuid-Holland",
+				Locality:         "Delft",
+				StreetAddress:    "",
+				PostalCode:       "",
+				CommonName:       "test.tjip.com",
+				SerialNumber:     nil,
+				NameSerialNumber: "",
+				SubjectAltNames:  nil,
+				NotBefore:        time.Time{},
+				NotAfter:         time.Time{},
+				BitSize:          0,
+			},
+			wantErr: false,
+		},
+		{
+			name:    "empty_csr",
+			args:    args{
+				csrFile: []byte(""),
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name:    "invalid_csr",
+			args:    args{
+				csrFile: []byte("random_character"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ReadCSR(tt.args.csrFile)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ReadCSR() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != nil {
+				if !reflect.DeepEqual(got.Organization, tt.want.Organization) {
+					t.Errorf("ReadCSR() got = %v, want %v", got, tt.want)
+				}
+				if !reflect.DeepEqual(got.Country, tt.want.Country) {
+					t.Errorf("ReadCSR() got = %v, want %v", got, tt.want)
+				}
+				if !reflect.DeepEqual(got.Province, tt.want.Province) {
+					t.Errorf("ReadCSR() got = %v, want %v", got, tt.want)
+				}
+				if !reflect.DeepEqual(got.Locality, tt.want.Locality) {
+					t.Errorf("ReadCSR() got = %v, want %v", got, tt.want)
+				}
+				if !reflect.DeepEqual(got.CommonName, tt.want.CommonName) {
+					t.Errorf("ReadCSR() got = %v, want %v", got, tt.want)
+				}
+			}
+
+		})
+	}
+}

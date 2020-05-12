@@ -8,6 +8,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"fmt"
 	"math/big"
 	"time"
 )
@@ -125,6 +126,53 @@ func (req *Request) GetPKIXName() pkix.Name {
 	}
 
 	return name
+}
+
+// ReadCSR reads csr into a x509.CertificateRequest and converts it into a Request
+func ReadCSR(csrFile []byte) (*Request, error) {
+	block, _ := pem.Decode(csrFile)
+	if block == nil || block.Type != "CERTIFICATE REQUEST" {
+		return nil, fmt.Errorf("failed to decode PEM block containing certificate request")
+	}
+
+	csr, err :=  x509.ParseCertificateRequest(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	request := NewRequest()
+	if len(csr.Subject.Organization) > 0 {
+		request.Organization = csr.Subject.Organization[0]
+	}
+	if len(csr.Subject.Country) > 0 {
+		request.Country = csr.Subject.Country[0]
+	}
+	if len(csr.Subject.Province) > 0 {
+		request.Province = csr.Subject.Province[0]
+	}
+	if len(csr.Subject.Locality) > 0 {
+		request.Locality = csr.Subject.Locality[0]
+	}
+	if len(csr.Subject.StreetAddress) > 0 {
+		request.StreetAddress = csr.Subject.StreetAddress[0]
+	}
+	if len(csr.Subject.PostalCode) > 0 {
+		request.PostalCode = csr.Subject.PostalCode[0]
+	}
+	request.CommonName = csr.Subject.CommonName
+	request.NameSerialNumber = csr.Subject.SerialNumber
+	request.SubjectAltNames = csr.DNSNames
+
+	if request.SerialNumber == nil {
+		randInt, err := GenerateRandomBigInt()
+		if err != nil {
+			return nil, err
+		}
+
+		request.SerialNumber = randInt
+	}
+
+	return request, nil
 }
 
 // GenerateCertificate will generate a signed certificate pair and will return certificate, key and a possible error

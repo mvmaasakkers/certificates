@@ -87,6 +87,8 @@ postgresql or mssql.
 
 To change key generation bitsize use the `--bitsize` flag (default is 4096, options are 2048 and 4096).
 
+To use a pre-existing csr to use during the generation give the path to the csr file using the `--csr` flag.
+
 ## Development setup
 
 This module uses [Go modules](https://github.com/golang/go/wiki/Modules) for dependency management.
