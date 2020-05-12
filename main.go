@@ -225,6 +225,11 @@ var certificateCommand = cli.Command{
 					Usage: "Filename to write key to",
 				},
 				cli.StringFlag{
+					Name: "csr",
+					Value: "",
+					Usage: "Give the filepath to an existing CSR if you want to sign using a pre-existing CSR",
+				},
+				cli.StringFlag{
 					Name:  "cn",
 					Value: "",
 					Usage: "Common name attached to the cert",
@@ -295,27 +300,43 @@ var certificateCommand = cli.Command{
 				},
 			},
 			Action: func(c *cli.Context) error {
-				cr := cert.NewRequest()
-				cr.CommonName = c.String("cn")
-				cr.Organization = c.String("org")
-				cr.Country = c.String("country")
-				cr.Province = c.String("province")
-				cr.Locality = c.String("locality")
-				cr.PostalCode = c.String("postalcode")
-				cr.StreetAddress = c.String("streetaddress")
-				cr.NameSerialNumber = c.String("name-serialnumber")
-				cr.BitSize = c.Int("bitsize")
 
-				cr.SubjectAltNames = c.StringSlice("subject-alt-name")
-
-				if cr.NameSerialNumber == "" {
-					// Generating serial number
-					sn, err := uuid.NewRandom()
+				var cr *cert.Request
+				if c.String("csr") != "" {
+					csrFile, err := ioutil.ReadFile(c.String("csr"))
 					if err != nil {
-						fmt.Printf("Error generating serial number: %s\n", err.Error())
+						fmt.Printf("Error reading CSR: %s\n", err.Error())
 						return err
 					}
-					cr.NameSerialNumber = sn.String()
+
+					cr, err = cert.ReadCSR(csrFile)
+					if err != nil {
+						fmt.Printf("Error reading CSR: %s\n", err.Error())
+						return err
+					}
+				} else {
+					cr = cert.NewRequest()
+					cr.CommonName = c.String("cn")
+					cr.Organization = c.String("org")
+					cr.Country = c.String("country")
+					cr.Province = c.String("province")
+					cr.Locality = c.String("locality")
+					cr.PostalCode = c.String("postalcode")
+					cr.StreetAddress = c.String("streetaddress")
+					cr.NameSerialNumber = c.String("name-serialnumber")
+					cr.BitSize = c.Int("bitsize")
+
+					cr.SubjectAltNames = c.StringSlice("subject-alt-name")
+
+					if cr.NameSerialNumber == "" {
+						// Generating serial number
+						sn, err := uuid.NewRandom()
+						if err != nil {
+							fmt.Printf("Error generating serial number: %s\n", err.Error())
+							return err
+						}
+						cr.NameSerialNumber = sn.String()
+					}
 				}
 
 				if c.Int64("serialnumber") != 0 {
