@@ -1,4 +1,4 @@
-FROM golang:1.13-alpine as builder
+FROM golang:1.18-alpine as builder
 RUN apk --no-cache add curl git gcc libc-dev
 
 WORKDIR /src
