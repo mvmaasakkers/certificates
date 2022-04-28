@@ -29,7 +29,7 @@ func run(args []string) error {
 	app := cli.NewApp()
 	app.Name = "certificates"
 	app.Usage = "An opinionated TLS certificate generator."
-	app.Version = "v0.5.0"
+	app.Version = "v0.7.1"
 	app.Description = "An opinionated TLS certificate generator."
 	app.Commands = []cli.Command{
 		certificateCommand,
@@ -225,7 +225,7 @@ var certificateCommand = cli.Command{
 					Usage: "Filename to write key to",
 				},
 				cli.StringFlag{
-					Name: "csr",
+					Name:  "csr",
 					Value: "",
 					Usage: "Give the filepath to an existing CSR if you want to sign using a pre-existing CSR",
 				},

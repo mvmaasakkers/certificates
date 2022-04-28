@@ -3,3 +3,4 @@ vendor
 *.crt
 *.key
 *.DB
+dist
