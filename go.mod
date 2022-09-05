@@ -1,4 +1,4 @@
-module github.com/mvmaasakkers/certificates
+module github.com/ns-kliu/certificates
 
 go 1.18
 
