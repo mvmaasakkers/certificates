@@ -454,18 +454,19 @@ func TestNewRequest(t *testing.T) {
 
 func TestRequest_GetPKIXName(t *testing.T) {
 	type fields struct {
-		Organization     string
-		Country          string
-		Province         string
-		Locality         string
-		StreetAddress    string
-		PostalCode       string
-		CommonName       string
-		SerialNumber     *big.Int
-		NameSerialNumber string
-		SubjectAltNames  []string
-		NotBefore        time.Time
-		NotAfter         time.Time
+		Organization       string
+		OrganizationalUnit string
+		Country            string
+		Province           string
+		Locality           string
+		StreetAddress      string
+		PostalCode         string
+		CommonName         string
+		SerialNumber       *big.Int
+		NameSerialNumber   string
+		SubjectAltNames    []string
+		NotBefore          time.Time
+		NotAfter           time.Time
 	}
 	tests := []struct {
 		name   string
@@ -505,23 +506,24 @@ func TestRequest_GetPKIXName(t *testing.T) {
 		{
 			name: "filled",
 			fields: fields{
-				Organization:     "Org",
-				Country:          "NLD",
-				Province:         "Zuid-Holland",
-				Locality:         "Rotterdam",
-				StreetAddress:    "Street",
-				PostalCode:       "1234AB",
-				CommonName:       "common.name",
-				SerialNumber:     &big.Int{},
-				NameSerialNumber: "abc1234cba",
-				SubjectAltNames:  nil,
-				NotBefore:        time.Time{},
-				NotAfter:         time.Time{},
+				Organization:       "Org",
+				OrganizationalUnit: "OrgUnit",
+				Country:            "NLD",
+				Province:           "Zuid-Holland",
+				Locality:           "Rotterdam",
+				StreetAddress:      "Street",
+				PostalCode:         "1234AB",
+				CommonName:         "common.name",
+				SerialNumber:       &big.Int{},
+				NameSerialNumber:   "abc1234cba",
+				SubjectAltNames:    nil,
+				NotBefore:          time.Time{},
+				NotAfter:           time.Time{},
 			},
 			want: pkix.Name{
 				Country:            []string{"NLD"},
 				Organization:       []string{"Org"},
-				OrganizationalUnit: nil,
+				OrganizationalUnit: []string{"OrgUnit"},
 				Locality:           []string{"Rotterdam"},
 				Province:           []string{"Zuid-Holland"},
 				StreetAddress:      []string{"Street"},
@@ -536,18 +538,19 @@ func TestRequest_GetPKIXName(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			req := &Request{
-				Organization:     tt.fields.Organization,
-				Country:          tt.fields.Country,
-				Province:         tt.fields.Province,
-				Locality:         tt.fields.Locality,
-				StreetAddress:    tt.fields.StreetAddress,
-				PostalCode:       tt.fields.PostalCode,
-				CommonName:       tt.fields.CommonName,
-				SerialNumber:     tt.fields.SerialNumber,
-				NameSerialNumber: tt.fields.NameSerialNumber,
-				SubjectAltNames:  tt.fields.SubjectAltNames,
-				NotBefore:        tt.fields.NotBefore,
-				NotAfter:         tt.fields.NotAfter,
+				Organization:       tt.fields.Organization,
+				OrganizationalUnit: tt.fields.OrganizationalUnit,
+				Country:            tt.fields.Country,
+				Province:           tt.fields.Province,
+				Locality:           tt.fields.Locality,
+				StreetAddress:      tt.fields.StreetAddress,
+				PostalCode:         tt.fields.PostalCode,
+				CommonName:         tt.fields.CommonName,
+				SerialNumber:       tt.fields.SerialNumber,
+				NameSerialNumber:   tt.fields.NameSerialNumber,
+				SubjectAltNames:    tt.fields.SubjectAltNames,
+				NotBefore:          tt.fields.NotBefore,
+				NotAfter:           tt.fields.NotAfter,
 			}
 			if got := req.GetPKIXName(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Request.GetPKIXName() = %v, want %v", got, tt.want)
@@ -603,8 +606,8 @@ func TestReadCSR(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "working_csr",
-			args:    args{
+			name: "working_csr",
+			args: args{
 				csrFile: testCSRFile,
 			},
 			want: &Request{
@@ -625,16 +628,16 @@ func TestReadCSR(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "empty_csr",
-			args:    args{
+			name: "empty_csr",
+			args: args{
 				csrFile: []byte(""),
 			},
 			want:    nil,
 			wantErr: true,
 		},
 		{
-			name:    "invalid_csr",
-			args:    args{
+			name: "invalid_csr",
+			args: args{
 				csrFile: []byte("random_character"),
 			},
 			want:    nil,
