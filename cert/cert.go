@@ -15,13 +15,14 @@ import (
 
 // Request is the struct needed to generate a CA or Certificate pair
 type Request struct {
-	Organization  string
-	Country       string
-	Province      string
-	Locality      string
-	StreetAddress string
-	PostalCode    string
-	CommonName    string
+	Organization       string
+	OrganizationalUnit string
+	Country            string
+	Province           string
+	Locality           string
+	StreetAddress      string
+	PostalCode         string
+	CommonName         string
 
 	SerialNumber     *big.Int
 	NameSerialNumber string
@@ -93,6 +94,10 @@ func (req *Request) GetPKIXName() pkix.Name {
 		name.Organization = []string{req.Organization}
 	}
 
+	if req.OrganizationalUnit != "" {
+		name.OrganizationalUnit = []string{req.OrganizationalUnit}
+	}
+
 	if req.Country != "" {
 		name.Country = []string{req.Country}
 	}
@@ -135,7 +140,7 @@ func ReadCSR(csrFile []byte) (*Request, error) {
 		return nil, fmt.Errorf("failed to decode PEM block containing certificate request")
 	}
 
-	csr, err :=  x509.ParseCertificateRequest(block.Bytes)
+	csr, err := x509.ParseCertificateRequest(block.Bytes)
 	if err != nil {
 		return nil, err
 	}
